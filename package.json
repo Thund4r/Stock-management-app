@@ -1,0 +1,20 @@
+{
+  "name": "testfrontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build":"webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type":"module",
+  "devDependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.370.0",
+    "@aws-sdk/client-iam": "^3.370.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.370.0",
+    "@aws-sdk/client-lambda": "^3.370.0",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
