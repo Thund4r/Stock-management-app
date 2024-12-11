@@ -30,16 +30,19 @@ const addToCart = async () => {
 const getCart = async () => {
     const customerID = parseInt(localStorage.getItem('CustomerID'));
     const params = {
-        FunctionName: "getCart",
-        Payload: JSON.stringify({
-            CustomerID: customerID
-        })
+        CustomerID: customerID
     };
-    const cart = await lambdaClient.send(new InvokeCommand(params));
-    const responsePayload = JSON.parse(new TextDecoder("utf-8").decode(cart.Payload));
-    console.log(responsePayload);
-    console.log(cart.Payload);
-   
+    //const cart = await lambdaClient.send(new InvokeCommand(params));
+    console.log(params);
+    const cart = await fetch("/.netlify/functions/getCart?parameter=${params}", {
+        method: "POST",
+        body: JSON.stringify(params),
+    });
+    //const responsePayload = JSON.parse(new TextDecoder("utf-8").decode(cart.Payload));
+    //console.log(responsePayload);
+    //console.log(JSON.parse(responsePayload.body));
+    const response = await cart.json();
+    console.log(response);
 }
 
 window.addToCart = addToCart;

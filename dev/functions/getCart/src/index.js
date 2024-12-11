@@ -1,25 +1,28 @@
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
  * 
  */
 export const handler = async (event) => {
+  payload = JSON.parse(event.body);
   const params = {
     TableName: "CartDB",
-    Key: {
-      CustomerID: event.CustomerID
+    KeyConditionExpression: "CustomerID = :c",
+    ExpressionAttributeValues: {
+        ":c": payload.CustomerID
     },
   };
 
   try {
     console.log("Getting user cart...");
-    const data = await ddbDocClient.send(new GetCommand(params));
-    console.log("Retrieved cart:", JSON.stringify(data, null, 2));
-    console.log("Event:", event)
+    console.log(params);
+    const data = await ddbDocClient.send(new QueryCommand(params));
+    console.log("Retrieved cart:", data.Items);
+    
     return {
-      statusCode: 123,
-      body: JSON.stringify(data.Item)
+      statusCode: 200,
+      body: JSON.stringify(data.Items)
     }
   } catch (err) {
     console.error(err);
