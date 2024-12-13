@@ -1,22 +1,27 @@
 {
-  "name": "testfrontend",
+  "name": "stock-management-app",
   "version": "1.0.0",
   "main": "index.js",
+  "private": true,
   "scripts": {
-    "build":"webpack"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build && next export"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "type":"module",
-  "devDependencies": {
+  "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.370.0",
     "@aws-sdk/client-iam": "^3.370.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.370.0",
-    "@aws-sdk/client-lambda": "^3.370.0",
-    "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4",
     "@aws-sdk/client-dynamodb": "^3.370.0",
-    "@aws-sdk/lib-dynamodb": "^3.370.0"
+    "@aws-sdk/lib-dynamodb": "^3.370.0",
+    "@netlify/plugin-nextjs": "^5.9.0",
+    "next": "^15.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

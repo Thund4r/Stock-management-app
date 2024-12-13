@@ -2,14 +2,15 @@
 <html>
     <script>
         window.onload = function() {
-            let CustomerID = localStorage.getItem('CustomerID');
-            if (!CustomerID) {
-                CustomerID = 7236 //Math.floor(Math.random() * (10000 - 1 + 1)) + 1;
-                localStorage.setItem('CustomerID', CustomerID);
-                console.log("New Customer ID created:", CustomerID);
-            } else {
-                console.log("Existing Customer ID retrieved:", CustomerID);
-            }
+            if (!localStorage.getItem("cart")){localStorage.setItem("cart",[])}
+            // let CustomerID = localStorage.getItem('CustomerID');
+            // if (!CustomerID) {
+            //     CustomerID = 7236 //Math.floor(Math.random() * (10000 - 1 + 1)) + 1;
+            //     localStorage.setItem('CustomerID', CustomerID);
+            //     console.log("New Customer ID created:", CustomerID);
+            // } else {
+            //     console.log("Existing Customer ID retrieved:", CustomerID);
+            // }
         };
     </script>
     <head>
@@ -27,7 +28,7 @@
             <input type="number" id="quantity" min="1" max="10">
 
         </form>
-        <button type="button" onclick="getCart()">Add to cart</button>
+        <button type="button" onclick="addToCart()">Add to cart</button>
     </body>
 
     <div id = "cart">
