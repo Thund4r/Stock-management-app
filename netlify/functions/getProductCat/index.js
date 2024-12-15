@@ -7,18 +7,18 @@ import { ddbDocClient } from "./ddbDocClient.js";
 export const handler = async (event) => {
   payload = JSON.parse(event.body);
   const params = {
-    TableName: "CartDB",
-    KeyConditionExpression: "CustomerID = :c",
+    TableName: "ProductsDB",
+    KeyConditionExpression: "Category = :c",
     ExpressionAttributeValues: {
-        ":c": payload.CustomerID
+        ":c": payload.Category
     },
   };
 
   try {
-    console.log("Getting user cart...");
+    console.log("Getting products...");
     console.log(params);
     const data = await ddbDocClient.send(new QueryCommand(params));
-    console.log("Retrieved cart:", data.Items);
+    console.log("Retrieved products:", data.Items);
     
     return {
       statusCode: 200,

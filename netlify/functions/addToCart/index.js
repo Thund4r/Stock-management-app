@@ -5,9 +5,10 @@ import { ddbDocClient } from "./ddbDocClient.js";
  * 
  */
 export const handler = async (event) => {
+  payload = JSON.parse(event.body);
   const params = {
     TableName: "CartDB",
-    Item: JSON.parse(event.body).Product,
+    Item: payload.Product,
   };
 
   try {

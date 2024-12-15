@@ -31,6 +31,18 @@ export default function Home() {
     }
   }
 
+  const getProductCat = async () => {
+    const params = {
+        Category: "Cheese"
+              };
+    const products = await fetch("/.netlify/functions/getProductCat", {
+        method: "POST",
+        body: JSON.stringify(params),
+    });
+    const response = await products.json();
+    console.log(response);
+  }
+
   // const addToProducts = async () => {
   //   const params = {
   //       Product: {
@@ -78,7 +90,7 @@ export default function Home() {
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}/>
         </form>
-        <button onClick={addToCart}>Submit  NOW</button>
+        <button onClick={getProductCat}>Submit  NOW</button>
       </main>
       <div id="cart">
         <h2>Your Cart</h2>
