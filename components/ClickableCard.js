@@ -7,21 +7,20 @@ export default function ClickableCard({data = [], title = ""}) {
     if (data.length !== 0){
         content = data.map(item => (
             //Change p to a when changing this to clickable and href to unique product page
-            <p key = {item.Name}> 
+            <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name} className={styles.card}> 
                 <b>{item.Name}</b> <br/>
-                <small>{item.Quantifier}</small> <br/>
+                <small>{item.Description}</small> <br/>
                 RM {item.Price} 
                 
-            </p>
+            </a>
         ));
     }
     else{
         content = (
         <p>
-            Products are empty.
+            
         </p>);
     }
-    
     if (title !== ""){
         content = (
             <>
@@ -35,7 +34,7 @@ export default function ClickableCard({data = [], title = ""}) {
     
 
     return(
-        <div className = {styles.card}>
+        <div className = {styles.cardBase}>
             {content}
         </div>
     );

@@ -13,7 +13,7 @@ export const handler = async (event) => {
         ":c": payload.Category
     },
   };
-
+  
   try {
     console.log("Getting products...");
     console.log(params);

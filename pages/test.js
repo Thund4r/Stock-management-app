@@ -6,17 +6,18 @@ export default function Home() {
 
     const [products, setProducts] = useState([])
     
+    
     useEffect(() => {
         getProductCat()
       }, []);
 
     const getProductCat = async () => {
+        const category = "Cheese";
         const params = {
-            Category: "Cheese"
+            Category: category
                   };
-        const response = await fetch("/.netlify/functions/getProductCat", {
-            method: "POST",
-            body: JSON.stringify(params),
+        const response = await fetch(`/.netlify/functions/products?Category=${category}`, {
+            method: "GET"
         });
         setProducts(await response.json());
         console.log(products);
