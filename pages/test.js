@@ -1,11 +1,14 @@
 import Head from 'next/head'
 import ClickableCard from '@components/ClickableCard'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Search from '@components/Search'
 
-export default function Home() {
-
-    const [products, setProducts] = useState([])
+export default function Test() {
+    const searchParams = useSearchParams();
+    const [products, setProducts] = useState([]);
     
+    console.log(searchParams.get("query"));
     
     useEffect(() => {
         getProductCat()
@@ -16,13 +19,12 @@ export default function Home() {
         const params = {
             Category: category
                   };
-        const response = await fetch(`/.netlify/functions/products?Category=${category}`, {
+        const response = await fetch(`/.netlify/functions/products?Category=${category}&Name=Com`, {
             method: "GET"
         });
         setProducts(await response.json());
-        console.log(products);
       }
-    
+    console.log(products);
 
     
     return(
@@ -32,7 +34,9 @@ export default function Home() {
                     <title>Test page</title>
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
-                <ClickableCard data={products} title = ""/>
+                <Search/>
+                {/*<ClickableCard data={products} title = ""/>*/}
+                
             </main>
         </div>
     )

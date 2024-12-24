@@ -1,4 +1,4 @@
-import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
@@ -7,6 +7,7 @@ import { ddbDocClient } from "./ddbDocClient.js";
 export const handler = async (event, context) => {
 
     let params;
+    let command;
     switch (event.httpMethod){
         case "POST":
             payload = JSON.parse(event.body);
@@ -39,17 +40,47 @@ export const handler = async (event, context) => {
         
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
-            params = {
-                TableName: "ProductsDB",
-                KeyConditionExpression: "Category = :c",
-                ExpressionAttributeValues: {
-                    ":c": query.get("Category")
-                },
-            };
+            if (query.get("Name")){
+                if (query.get("Category")){
+                    params = {
+                        TableName: "ProductsDB",
+                        FilterExpression: "Category = :c AND contains(#n, :n)",
+                        ExpressionAttributeValues: {
+                            ":c": query.get("Category"),
+                            ":n": query.get("Name"),
+                        },
+                        ExpressionAttributeNames: {
+                            "#n": "Name",
+                        },
+                    }
+                }
+                else{
+                    params = {
+                        TableName: "ProductsDB",
+                        FilterExpression: "contains(#n, :n)",
+                        ExpressionAttributeValues: {
+                            "#n": "Name",
+                            ":n": query.get("Name"),
+                        }
+                    }
+                }
+                command = new ScanCommand(params);
+            }
+            else{
+                params = {
+                    TableName: "ProductsDB",
+                    KeyConditionExpression: "Category = :c",
+                    ExpressionAttributeValues: {
+                        ":c": query.get("Category")
+                    },
+                };
+                command = new QueryCommand(params);
+            }
+            
             try {
                 console.log("Getting products...");
                 console.log(params);
-                const data = await ddbDocClient.send(new QueryCommand(params));
+                const data = await ddbDocClient.send(command);
                 console.log("Retrieved products:", data.Items);
                 
                 return {

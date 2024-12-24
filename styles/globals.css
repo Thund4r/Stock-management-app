@@ -30,12 +30,12 @@ code {
 }
 
 .product{
-  padding: 6rem 0;
-  margin: 0 4.5rem;
+  width: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
+  margin: 50px auto;
 }
 
 .productName {
