@@ -10,19 +10,19 @@ export default function Search () {
     const handleSearch = useDebouncedCallback((query) => {
         const params = new URLSearchParams(searchParams);
         if (query) {
-          params.set('query', query);
+          params.set('name', query);
         } 
         else {
-          params.delete('query');
+          params.delete('name');
         }
         replace(`${pathname}?${params.toString()}`);
-    }, 300);
+    }, 1000);
     
     return (
     <div>
         <input
         placeholder="Search..."
-        defaultValue={searchParams.get('query')?.toString()}
+        defaultValue={searchParams.get('name')?.toString()}
         onChange={(e) => {
           handleSearch(e.target.value);
         }}/>

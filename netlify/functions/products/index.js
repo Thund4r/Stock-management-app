@@ -40,41 +40,42 @@ export const handler = async (event, context) => {
         
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
-            if (query.get("Name")){
-                if (query.get("Category")){
-                    params = {
-                        TableName: "ProductsDB",
-                        FilterExpression: "Category = :c AND contains(#n, :n)",
-                        ExpressionAttributeValues: {
-                            ":c": query.get("Category"),
-                            ":n": query.get("Name"),
-                        },
-                        ExpressionAttributeNames: {
-                            "#n": "Name",
-                        },
-                    }
-                }
-                else{
-                    params = {
-                        TableName: "ProductsDB",
-                        FilterExpression: "contains(#n, :n)",
-                        ExpressionAttributeValues: {
-                            "#n": "Name",
-                            ":n": query.get("Name"),
-                        }
-                    }
-                }
+            console.log(query.get("name"));
+            console.log(query.get("category"));
+            let name = query.get("name");
+            let category = query.get("category");
+            if (name && name !== "null") {
+                // When name is provided
+                params = {
+                    TableName: "ProductsDB",
+                    FilterExpression: category && category !== "null" ? "Category = :c AND contains(#n, :n)" : "contains(#n, :n)",
+                    ExpressionAttributeValues: {
+                        ...(category && category !== "null" ? { ":c": category } : {}),
+                        ":n": name,
+                    },
+                    ExpressionAttributeNames: {
+                        "#n": "Name",
+                    },
+                };
                 command = new ScanCommand(params);
-            }
-            else{
+            } 
+            else if (category && category !== "null") {
+                // When category is provided
                 params = {
                     TableName: "ProductsDB",
                     KeyConditionExpression: "Category = :c",
                     ExpressionAttributeValues: {
-                        ":c": query.get("Category")
+                        ":c": category,
                     },
                 };
                 command = new QueryCommand(params);
+            } 
+            else {
+                // When neither name nor category is provided
+                params = {
+                    TableName: "ProductsDB",
+                };
+                command = new ScanCommand(params);
             }
             
             try {
