@@ -44,22 +44,22 @@ export const handler = async (event, context) => {
             console.log(query.get("category"));
             let name = query.get("name");
             let category = query.get("category");
-            if (name && name !== "null") {
-                // When name is provided
-                params = {
-                    TableName: "ProductsDB",
-                    FilterExpression: category && category !== "null" ? "Category = :c AND contains(#n, :n)" : "contains(#n, :n)",
-                    ExpressionAttributeValues: {
-                        ...(category && category !== "null" ? { ":c": category } : {}),
-                        ":n": name,
-                    },
-                    ExpressionAttributeNames: {
-                        "#n": "Name",
-                    },
-                };
-                command = new ScanCommand(params);
-            } 
-            else if (category && category !== "null") {
+            // if (name && name !== "null") {
+            //     // When name is provided
+            //     params = {
+            //         TableName: "ProductsDB",
+            //         FilterExpression: category && category !== "null" ? "Category = :c AND contains(#n, :n)" : "contains(#n, :n)",
+            //         ExpressionAttributeValues: {
+            //             ...(category && category !== "null" ? { ":c": category } : {}),
+            //             ":n": name,
+            //         },
+            //         ExpressionAttributeNames: {
+            //             "#n": "Name",
+            //         },
+            //     };
+            //     command = new ScanCommand(params);
+            // } 
+            if (category && category !== "null") {
                 // When category is provided
                 params = {
                     TableName: "ProductsDB",
@@ -84,6 +84,16 @@ export const handler = async (event, context) => {
                 const data = await ddbDocClient.send(command);
                 console.log("Retrieved products:", data.Items);
                 
+                if (name && name !== "null") {
+                    //Perform filtering
+                    let items = data.Items.filter(item => item.Name.toLowerCase().includes(name.toLowerCase()));
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify(items)
+                        }
+                }
+
+
                 return {
                 statusCode: 200,
                 body: JSON.stringify(data.Items)
