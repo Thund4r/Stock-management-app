@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import styles from './SearchResult.module.css'
 
 export default function SearchResult ({name, category, initial}) {
 
@@ -8,9 +9,11 @@ export default function SearchResult ({name, category, initial}) {
         if (!name){
             if (initial.length !== 0){
                 setContent(initial.map(item => (
-                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name}> 
-                        <b>{item.Name}</b> <br/>
-                        RM {item.Price} <br/>
+                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name} className={styles.item}> 
+                        <div className={styles.itemContent}>
+                            <b>{item.Name}</b> <br/>
+                            RM {item.Price} <br/>
+                        </div>
                     </a>
                 )));
             }
@@ -23,9 +26,11 @@ export default function SearchResult ({name, category, initial}) {
             const data = await response.json();
             if (data.length !== 0){
                 setContent(data.map(item => (
-                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name}> 
-                        <b>{item.Name}</b> <br/>
-                        RM {item.Price} <br/>
+                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name} className={styles.item}> 
+                        <div className={styles.itemContent}>
+                            <b>{item.Name}</b> <br/>
+                            RM {item.Price} <br/>
+                        </div>
                     </a>
                 )));
             }
@@ -39,7 +44,7 @@ export default function SearchResult ({name, category, initial}) {
     }, [name]);
 
     return (
-    <div>
+    <div className = {styles.result}>
         {content}
     </div>)
 }

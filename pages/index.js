@@ -2,62 +2,16 @@ import Head from 'next/head'
 import Header from '@components/Header'
 import Footer from '@components/Footer'
 import { useEffect, useState } from 'react'
+import CustomerNav from '@components/CustomerNav'
+import ClickableCard from '@components/ClickableCard'
 
-export default function Home() {
+export default function Home({initial}) {
 
-  const [product, setProduct] = useState("Bagel");
-  const [quantity, setQuantity] = useState("1");
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || [])
   }, []);
-
-  const addToCart = () => {
-    const newItem = {product, quantity:parseInt(quantity)};
-    const itemExists = cart.findIndex((item) => item.product === newItem.product)
-    if (itemExists == -1){
-      const newCart = [...cart, newItem];
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
-      console.log("New cart:", newCart);
-    }
-    else{
-      const newCart = [...cart]
-      newCart[itemExists].quantity += newItem.quantity;
-      setCart(newCart);
-      localStorage.setItem("cart", JSON.stringify(newCart));
-      console.log("New cart:", newCart);
-    }
-  }
-
-  const getProductCat = async () => {
-    const params = {
-        Category: "Cheese"
-              };
-    const products = await fetch("/.netlify/functions/getProductCat", {
-        method: "POST",
-        body: JSON.stringify(params),
-    });
-    const response = await products.json();
-    console.log(response);
-  }
-
-  // const addToProducts = async () => {
-  //   const params = {
-  //       Product: {
-  //                 CustomerID: 7236,
-  //                 Name: product,
-  //                 Quantity: 1
-  //               }
-  //             };
-  //   const cart = await fetch("/.netlify/functions/addToCart", {
-  //       method: "POST",
-  //       body: JSON.stringify(params),
-  //   });
-  //   const response = await cart.json();
-  //   console.log(response);
-  // }
 
   return (
     <div className="container">
@@ -68,29 +22,9 @@ export default function Home() {
       </Head>
 
       <main>
-        <Header title="This is a test shopping page!" />
-        <a href="/test/">Click Here</a>
-        <form>
-          <label htmlFor="product">Product:</label>
-          <select 
-          id="product"
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}>
-            <option value="Bagel">Bagel</option>
-            <option value="Cheese">Cheese</option>
-            <option value="Jam">Jam</option>
-            <option value="Butter">Butter</option>
-          </select>
-          <label htmlFor="quantity">Quantity:</label>
-          <input
-          type="number"
-          id="quantity"
-          min="1"
-          max="10"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}/>
-        </form>
-        <button onClick={getProductCat}>Submit  NOW</button>
+        <Header title="10 Gram Gourmet Sdn Bhd" />
+        <CustomerNav/>
+        <ClickableCard data={initial} title = ""/>
       </main>
       <div id="cart">
         <h2>Your Cart</h2>
@@ -110,4 +44,17 @@ export default function Home() {
       <Footer />
     </div>
   )
+}
+export async function getServerSideProps() {
+
+  const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=&name=`, {
+      method: "GET"
+  });
+  const initial = await response.json();
+
+  return {
+      props: {
+          initial,
+      },
+  };
 }
