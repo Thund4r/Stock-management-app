@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Search from '@components/Search'
 import SearchResult from '@components/SearchResult'
 
-export default function Test() {
+export default function Test({initial}) {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState([]);
     
@@ -34,10 +34,26 @@ export default function Test() {
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
                 <Search/>
-                <SearchResult name = {searchParams.get("name")} category = {searchParams.get("category")}/>
+                <SearchResult name = {searchParams.get("name")} category = {searchParams.get("category")} initial = {initial}/>
                 {/*<ClickableCard data={products} title = ""/>*/}
                 
             </main>
         </div>
-    )
+    );
+}
+
+
+export async function getServerSideProps(context) {
+
+    const { name = '', category = '' } = context.query;
+    const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=${category}&name=${name}`, {
+        method: "GET"
+    });
+    const initial = await response.json();
+
+    return {
+        props: {
+            initial,
+        },
+    };
 }

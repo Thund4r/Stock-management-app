@@ -16,7 +16,7 @@ export default function Search () {
           params.delete('name');
         }
         replace(`${pathname}?${params.toString()}`);
-    }, 1000);
+    }, 300);
     
     return (
     <div>
