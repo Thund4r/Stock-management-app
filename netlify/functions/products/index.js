@@ -42,6 +42,7 @@ export const handler = async (event, context) => {
             const query = new URLSearchParams(event.rawQuery);
             let name = query.get("name");
             let category = query.getAll("category");
+            console.log(category.length);
             // if (name && name !== "null") {
             //     // When name is provided
             //     params = {
@@ -57,7 +58,7 @@ export const handler = async (event, context) => {
             //     };
             //     command = new ScanCommand(params);
             // } 
-            if (category && category[0] !== '') {
+            if (category.length > 0 && category[0] !== '') {
                 // When category is provided
                 const expressionValues = {};
                 const placeholders = category.map((category, index) => {
