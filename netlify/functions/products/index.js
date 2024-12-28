@@ -40,10 +40,8 @@ export const handler = async (event, context) => {
         
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
-            console.log(query.get("name"));
-            console.log(query.get("category"));
             let name = query.get("name");
-            let category = query.get("category");
+            let category = query.getAll("category");
             // if (name && name !== "null") {
             //     // When name is provided
             //     params = {
@@ -59,19 +57,25 @@ export const handler = async (event, context) => {
             //     };
             //     command = new ScanCommand(params);
             // } 
-            if (category && category !== "null") {
+            if (category && category[0] !== '') {
                 // When category is provided
+                const expressionValues = {};
+                const placeholders = category.map((category, index) => {
+                    const key = `:cat${index}`;
+                    expressionValues[key] = category;
+                    return key;
+                });
+
                 params = {
                     TableName: "ProductsDB",
-                    KeyConditionExpression: "Category = :c",
-                    ExpressionAttributeValues: {
-                        ":c": category,
-                    },
+                    FilterExpression: `Category IN (${placeholders.join(", ")})`,
+                    ExpressionAttributeValues: expressionValues,
                 };
-                command = new QueryCommand(params);
+                console.log(params);
+                command = new ScanCommand(params);
             } 
             else {
-                // When neither name nor category is provided
+                // When category is not provided
                 params = {
                     TableName: "ProductsDB",
                 };
@@ -85,7 +89,6 @@ export const handler = async (event, context) => {
                 console.log("Retrieved products:", data.Items);
                 
                 if (name && name !== "null") {
-                    //Perform filtering
                     let items = data.Items.filter(item => item.Name.toLowerCase().includes(name.toLowerCase()));
                     return {
                         statusCode: 200,

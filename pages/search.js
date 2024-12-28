@@ -7,7 +7,7 @@ import Search from '@components/Search'
 import SearchResult from '@components/SearchResult'
 import CustomerNav from '@components/CustomerNav'
 
-export default function search({initial}) {
+export default function search({initial, categories}) {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState([]);
     
@@ -38,7 +38,8 @@ export default function search({initial}) {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                <SearchResult name = {searchParams.get("name")} category = {searchParams.get("category")} initial = {initial}/>
+                <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
+                {searchParams.get("category")}
                 {/*<ClickableCard data={products} title = ""/>*/}
                 
             </main>
@@ -50,14 +51,23 @@ export default function search({initial}) {
 export async function getServerSideProps(context) {
 
     const { name = '', category = '' } = context.query;
-    const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=${category}&name=${name}`, {
+    let categoryURL = `category=${category}&`;
+    if (category.constructor === Array){
+        categoryURL = category.map(cat => 
+            `category=${cat}&`
+        ).join("")
+    }
+    console.log(category);
+    const response = await fetch(`http://localhost:8888/.netlify/functions/products?${categoryURL}name=${name}`, {
         method: "GET"
     });
     const initial = await response.json();
+    const categories = [...new Set(initial.map(item => item.Category))];
 
     return {
         props: {
             initial,
+            categories,
         },
     };
 }
