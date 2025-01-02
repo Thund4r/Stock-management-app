@@ -5,12 +5,19 @@ import { useRouter } from 'next/router'
 import Search from '@components/Search'
 import SearchResult from '@components/SearchResult'
 import CustomerNav from '@components/CustomerNav'
+import Cart from '@components/Cart'
+import { useEffect, useState } from 'react'
 
 
 export default function search({initial, categories}) {
     const searchParams = useSearchParams();
     const {replace} = useRouter();
     const pathname = usePathname();
+    const [cart, setCart] = useState([]);
+
+    useEffect(() => {
+    setCart(JSON.parse(localStorage.getItem("cart")) || [])
+    }, []);
     
 
     function filterClick(cat, checked){
@@ -27,11 +34,13 @@ export default function search({initial, categories}) {
     
     return(
         <div className="container">
+            
+            <Head>
+                <title>Search</title>
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+
             <main>
-                <Head>
-                    <title>Search</title>
-                    <link rel="icon" href="/favicon.ico" />
-                </Head>
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
@@ -45,7 +54,7 @@ export default function search({initial, categories}) {
                 })}
                 <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
                 
-                
+            <Cart cart = {cart}/>
             </main>
         </div>
     );

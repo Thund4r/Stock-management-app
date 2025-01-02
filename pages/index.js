@@ -4,10 +4,12 @@ import Footer from '@components/Footer'
 import { useEffect, useState } from 'react'
 import CustomerNav from '@components/CustomerNav'
 import ClickableCard from '@components/ClickableCard'
+import Cart from '@components/Cart'
 
 export default function Home({initial}) {
 
   const [cart, setCart] = useState([]);
+
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || [])
@@ -26,21 +28,9 @@ export default function Home({initial}) {
         <CustomerNav/>
         <ClickableCard data={initial} title = ""/>
       </main>
-      <div id="cart">
-        <h2>Your Cart</h2>
-        {cart.length === 0 ? (
-          <p>The cart is empty.</p>
-        ) : (
-          <ul>
-            {cart.map((item, index) => (
-              <li key={index}>
-                {item.product} - Quantity: {item.quantity}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
 
+      <Cart cart={cart}/>
+      
       <Footer />
     </div>
   )
