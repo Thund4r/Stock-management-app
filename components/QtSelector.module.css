@@ -1,0 +1,19 @@
+.button {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-weight: 1000;
+    font-size: 1em;
+}
+
+.container {
+    display: flex;
+}
+
+.input {
+    display: flex;
+    width: 45px;
+    font-size: 1em;
+    text-align: center;
+
+}

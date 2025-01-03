@@ -54,7 +54,7 @@ export default function Page() {
   }
 
   const addToCart = () => {
-    const newItem = {product: product.Name, quantity:parseInt(quantity)};
+    const newItem = {product: product.Name, quantity: parseInt(quantity), price: parseInt(product.Price)};
     const itemExists = cart.findIndex((item) => item.product === newItem.product)
     if (itemExists == -1){
       const newCart = [...cart, newItem];

@@ -17,7 +17,6 @@ export default function Home({initial}) {
 
   return (
     <div className="container">
-
       <Head>
         <title>Product page</title>
         <link rel="icon" href="/favicon.ico" />

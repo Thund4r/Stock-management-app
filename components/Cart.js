@@ -19,7 +19,7 @@ export default function Cart({cart = []}) {
               </li>
             ))}
         </ul>
-        <a className={`${styles.checkoutButton} ${cartOpen ? "" : styles.dissapear}`} href='/cart'> Checkout </a>
+        <a className={`${styles.checkoutButton} ${cartOpen ? "" : styles.dissapear}`} href='/checkout'> Checkout </a>
     </div>
     <div className={`${styles.cartButton} ${cartOpen ? styles.dissapear : ""}`} onClick={toggleCart}>CART</div>
     </>
