@@ -1,10 +1,10 @@
-import TestAdminSearchContainer from "../../components/TestAdminSearchContainer.js"
+import AdminSearchContainer from "../../components/AdminSearchContainer.js"
 
 
 export default function page(){
     return(
         <div>
-            <TestAdminSearchContainer/>
+            <AdminSearchContainer/>
         </div>
     )
 }
