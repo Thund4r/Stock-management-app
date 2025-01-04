@@ -1,11 +1,10 @@
-import TestAdminSearch from "../../components/TestAdminSearchBar.js"
-import TestSearchBar from "../../components/test.js"
+import TestAdminSearchContainer from "../../components/TestAdminSearchContainer.js"
+
 
 export default function page(){
     return(
         <div>
-        <TestAdminSearch />
-        <TestSearchBar/>
+            <TestAdminSearchContainer/>
         </div>
     )
 }

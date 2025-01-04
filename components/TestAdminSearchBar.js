@@ -1,22 +1,24 @@
-export default function search() {
+import React, { useState, useEffect } from 'react';
 
-    //doesnt work as expected. fix tmr
-    
-    async function getData(){
-        return await fetch("https://jsonplaceholder.typicode.com/todos/1", {
-            method: "GET" 
-        }) //is the await needed?
+//deal with rate limiting here
+export default function searchBar({setResponseJSON, setNameQuery}) {
+
+    const fetchProducts = async () => {
+        return fetch('https://jsonplaceholder.typicode.com/users')
     }
-
-    return(
-        <input 
-        type = "text" 
-        placeholder = "Type to search" 
-        onChange = {() => {
-            const data =  getData().then((response) => response.json())
-            console.log(data)
+    
+    return (
+    <input 
+        placeholder = "search" 
+        onChange = {async (e) => {
+            try {
+                const product_data = await fetchProducts();
+                setNameQuery(e.target.value)
+                setResponseJSON(product_data)
             }
-        }
-        />
+            catch(e){
+                console.log("some EROR OBJECT thrown") //not too sure how to handle this part yet.
+            }
+        }}/>
     )
 }
