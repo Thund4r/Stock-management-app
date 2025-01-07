@@ -1,0 +1,9 @@
+.formComponent {
+    margin-bottom: 40px;
+}
+
+.rowContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

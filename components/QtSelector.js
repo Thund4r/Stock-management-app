@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import styles from './QtSelector.module.css';
 
-export default function QtSelector({}) {
+export default function QtSelector({onQuantityChange, initialQuant = 1}) {
 
-const [quantity, setQuantity] = useState(1);
+const [quantity, setQuantity] = useState(initialQuant);
 
 const increment = () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
-    //onQuantityChange(newQuantity);
+    onQuantityChange(newQuantity);
 };
 
 const decrement = () => {
-    if (quantity > 0) {
+    if (quantity > 1) {
         const newQuantity = quantity - 1;
         setQuantity(newQuantity);
-        //onQuantityChange(newQuantity);
+        onQuantityChange(newQuantity);
     }
 };
 
@@ -24,7 +24,7 @@ const inputChange = (event) => {
     if (value === "" || /^[0-9]+$/.test(value)) { //RegEx expression here is ^(match at beginning of text) [0-9](only numbers between 0 and 9 for each digit) +(one or more digits) and $(match up to the end of text)
       const newQuantity = value === "" ? 0 : parseInt(value, 10);
       setQuantity(newQuantity);
-      //onQuantityChange(newQuantity);
+      onQuantityChange(newQuantity);
     }
 };
 
@@ -35,6 +35,7 @@ const inputChange = (event) => {
                 className={styles.input}
                 type="text"
                 value={quantity}
+                
                 onChange={inputChange}
             />
             <button className={styles.button} onClick={increment} type="button"> + </button>

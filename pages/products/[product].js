@@ -1,3 +1,4 @@
+import QtSelector from '@components/QtSelector';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
  
@@ -39,15 +40,9 @@ export default function Page() {
     </div>
     <div className="productQuantity">
       <div>
-        Quantity
+        Quantity 
       </div>
-      <input 
-          type="number"
-          id="quantity"
-          min="1"
-          max="10"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}/>
+      <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)}/>
     </div>
     </>
     )
@@ -55,12 +50,11 @@ export default function Page() {
 
   const addToCart = () => {
     const newItem = {product: product.Name, quantity: parseInt(quantity), price: parseInt(product.Price)};
-    const itemExists = cart.findIndex((item) => item.product === newItem.product)
+    const itemExists = cart.findIndex((item) => item.product === newItem.product);
     if (itemExists == -1){
       const newCart = [...cart, newItem];
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
-      console.log("New cart:", newCart);
       router.back();
     }
     else{
@@ -68,7 +62,6 @@ export default function Page() {
       newCart[itemExists].quantity += newItem.quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
-      console.log("New cart:", newCart);
       router.back();
     }
   }

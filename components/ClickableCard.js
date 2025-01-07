@@ -1,5 +1,6 @@
 import styles from './ClickableCard.module.css'
 
+
 export default function ClickableCard({data = [], title = ""}) {
 
     let content;

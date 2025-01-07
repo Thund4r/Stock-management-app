@@ -42,7 +42,6 @@ export const handler = async (event, context) => {
             const query = new URLSearchParams(event.rawQuery);
             let name = query.get("name");
             let category = query.getAll("category");
-            console.log(category.length);
             // if (name && name !== "null") {
             //     // When name is provided
             //     params = {
@@ -72,7 +71,6 @@ export const handler = async (event, context) => {
                     FilterExpression: `Category IN (${placeholders.join(", ")})`,
                     ExpressionAttributeValues: expressionValues,
                 };
-                console.log(params);
                 command = new ScanCommand(params);
             } 
             else {
@@ -85,7 +83,6 @@ export const handler = async (event, context) => {
             
             try {
                 console.log("Getting products...");
-                console.log(params);
                 const data = await ddbDocClient.send(command);
                 console.log("Retrieved products:", data.Items);
                 
@@ -103,7 +100,6 @@ export const handler = async (event, context) => {
                 body: JSON.stringify(data.Items)
                 }
             } catch (err) {
-                console.error(err);
                 return {
                 statusCode: 500,
                 body: JSON.stringify(err)

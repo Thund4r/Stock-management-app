@@ -7,6 +7,8 @@ import SearchResult from '@components/SearchResult'
 import CustomerNav from '@components/CustomerNav'
 import Cart from '@components/Cart'
 import { useEffect, useState } from 'react'
+import { Group, Stack } from '@mantine/core';
+
 
 
 export default function search({initial, categories}) {
@@ -44,16 +46,19 @@ export default function search({initial, categories}) {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                {categories.map(cat => {
-                    const checked = searchParams.getAll('category').includes(cat);
-                    return(
-                    <div key={cat}>
-                        <input type="checkbox" id={cat} checked={checked} onChange={(e) => filterClick(cat, e.target.checked)}/>
-                        <label htmlFor={cat}>{cat}</label>
-                    </div>)
-                })}
-                <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
-                
+                <Group wrap="nowrap">
+                    <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
+                    {categories.map(cat => {
+                        const checked = searchParams.getAll('category').includes(cat);
+                        return(
+                        <Group wrap="nowrap" key={cat}>
+                            <input type="checkbox" id={cat} checked={checked} onChange={(e) => filterClick(cat, e.target.checked)}/>
+                            <label htmlFor={cat}>{cat}</label>
+                        </Group>)
+                    })}
+                    </Stack>
+                    <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
+                </Group>
             <Cart cart = {cart}/>
             </main>
         </div>
