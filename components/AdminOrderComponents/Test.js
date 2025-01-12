@@ -10,7 +10,6 @@
 // --------------------------------------
 
 
-
 async function sendPostReq(){
     const payload = {
         custName: "fake",
@@ -29,7 +28,6 @@ async function sendPostReq(){
 
     console.log("Constructed payload")
     console.log("About to send fetch request")
-
 
     //this might need ot be in a try catch
     try{
@@ -54,6 +52,7 @@ async function sendPostReq(){
         console.log("An error was thrown,", error)
     }
 }
+
 
 export function Test(){
     return(
