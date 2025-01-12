@@ -1,10 +1,9 @@
-import TestAdminSearchContainer from "../../components/Test/TestAdminSearchContainer.js"
-
+import {Test} from "../../components/AdminOrderComponents/Test.js"
 
 export default function page(){
     return(
         <div>
-            <TestAdminSearchContainer/>
+            <Test/>        
         </div>
     )
 }

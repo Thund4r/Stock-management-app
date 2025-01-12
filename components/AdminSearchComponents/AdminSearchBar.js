@@ -3,7 +3,6 @@ import { useDebouncedCallback } from 'use-debounce'
 
 
 export default function searchBar({setResponseJSON, setNameQuery, API_URL}) {
-
     
     const handleSearchInput = async (event, API_URL) => {
         let API_data = undefined;

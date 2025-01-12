@@ -1,10 +1,10 @@
-import AdminSearchContainer from "../../components/AdminSearchContainer.js"
+import AdminSearchContainer from "../../components/AdminSearchComponents/AdminSearchContainer.js"
 
 
 export default function page(){
     return(
         <div>
-            <AdminSearchContainer/>
+            <AdminSearchContainer API_URL={'https://jsonplaceholder.typicode.com/users'}/>
         </div>
     )
 }
