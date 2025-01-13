@@ -41,23 +41,8 @@ export const handler = async (event, context) => {
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
             let name = query.get("name");
-            let category = query.getAll("category");
-            // if (name && name !== "null") {
-            //     // When name is provided
-            //     params = {
-            //         TableName: "ProductsDB",
-            //         FilterExpression: category && category !== "null" ? "Category = :c AND contains(#n, :n)" : "contains(#n, :n)",
-            //         ExpressionAttributeValues: {
-            //             ...(category && category !== "null" ? { ":c": category } : {}),
-            //             ":n": name,
-            //         },
-            //         ExpressionAttributeNames: {
-            //             "#n": "Name",
-            //         },
-            //     };
-            //     command = new ScanCommand(params);
-            // } 
-            if (category.length > 0 && category[0] !== '') {
+            let category = query.get("category");
+            if (category && category !== "null") {
                 // When category is provided
                 const expressionValues = {};
                 const placeholders = category.map((category, index) => {
@@ -93,19 +78,23 @@ export const handler = async (event, context) => {
                         body: JSON.stringify(items)
                         }
                 }
-
-
-                return {
-                statusCode: 200,
-                body: JSON.stringify(data.Items)
-                }
-            } catch (err) {
+                else {
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify(data.Items)
+                    }
+                } 
+            } 
+            catch (err) {
+                console.error(err);
                 return {
                 statusCode: 500,
                 body: JSON.stringify(err)
                 }
-            };
-
+            }
+        //implement PUT
+        case "PUT": 
+        
         default:
             console.log(event);
             return{
