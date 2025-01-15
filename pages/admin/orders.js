@@ -1,20 +1,21 @@
 import styles from '../../styles/adminorders.module.css'
-import {CreateOrderButton} from "../../components/AdminOrderComponents/CreateOrderButton.js"
+import {CreateOrderButton, Test} from "../../components/AdminOrderComponents/CreateOrderButton.js"
 import {BulkEditButton} from "../../components/AdminOrderComponents/BulkEditButton.js"
 
 export default function page(){
     return(
-        <div>
+        <main className = {styles.ordersContainer}>
             <div className = {styles.actionToolbar}>
-                <span>
-                <h5>Orders</h5>
+                <h3>Orders</h3>
                 {/* add question mark to end up next to header */}
-                </span>
                 <span className = {styles.actionButtonContainer}>
                     <BulkEditButton></BulkEditButton>
-                    <CreateOrderButton></CreateOrderButton>
+                    <Test></Test>
                 </span>
             </div>
-        </div>
+            <div>
+                hello
+            </div>
+        </main>
     )
 }
