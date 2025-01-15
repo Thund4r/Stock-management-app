@@ -61,7 +61,7 @@ export const handler = async (event) => {
       }
 
 
-      const orderCounterParams = {
+      const orderCounterParam = {
         TableName: "OrderIDCounterDB",
         Key:{
           Orders: "LatestOrderID"
@@ -70,7 +70,7 @@ export const handler = async (event) => {
       
       let latestOrdID = undefined
       try{
-        const OrdCountResult = await ddbDocClient.send(new GetCommand(orderCounterParams))
+        const OrdCountResult = await ddbDocClient.send(new GetCommand(orderCounterParam))
         console.log("OrdCountResult:", OrdCountResult)
         if (!OrdCountResult.Item?.hasOwnProperty("Count")){
           //To do: implement some sort of logging method here instead of using console.log() for when you actually deploy servr.
@@ -84,8 +84,9 @@ export const handler = async (event) => {
         //To do: implement some sort of logging method here instead of using console.log() for when you actually deploy servr.
         console.log(err)
       }
-
-      const LatestOrdParams = {
+      
+      //parameters used to grab the latest orderID.
+      const LatestOrdParam = {
         TableName: "OrderDB",
         Key:{
           OrderID: latestOrdID
@@ -94,7 +95,7 @@ export const handler = async (event) => {
       }
 
       try{
-        const latestOrdResult = await ddbDocClient.send(new GetCommand(LatestOrdParams))
+        const latestOrdResult = await ddbDocClient.send(new GetCommand(LatestOrdParam))
         //checks if an order ID with the same count value exists already within OrderDB 
         if(latestOrdResult.hasOwnProperty("Item")){
           return factoryHttpRes(409,  "false, database consistency error", "OrderIDCounterDB count conflicts with existing OrderDB entries", "The current order count from OrderIDCounterDB indicates a new order ID that already exists in OrderDB. Please verify database consistency.")
@@ -105,6 +106,7 @@ export const handler = async (event) => {
         console.log(err)
       }
 
+      //parameters to be logged into orderDB
       const NewOrderParam = {
         TableName: "OrderDB",
         Item:{
@@ -147,14 +149,7 @@ export const handler = async (event) => {
         const response = await ddbDocClient.send(new UpdateCommand(updateOrderIDParam))
         responseHttpStatus = response['$metadata'].httpStatusCode
         if (responseHttpStatus < 200 || responseHttpStatus > 299){
-          return {
-            statusCode: 500,
-            body: JSON.stringify({
-              success: "False",
-              message: "An order was successfully made but updating order count in OrderIDCounterDB failed. Please manually update the count in AWS dynamoDB",
-              error: "Updating OrderIDCounterDB failed"
-            })
-          }
+          return factoryHttpRes(500 , "False", "An order was successfully made but updating order count in OrderIDCounterDB failed. Please manually update the count in AWS dynamoDB", "Updating OrderIDCounterDB failed")
         }
       }
       catch(err){
@@ -162,17 +157,13 @@ export const handler = async (event) => {
         console.log(err)
       }
 
-      return{
-      statusCode: 202,
-      body: JSON.stringify({
-        success: "True, valid data received",
-        message: "data was validated sucessfully",
-        error: "N/A"
-      })
-    }
+
+      return factoryHttpRes(202, "True, valid data received", "data was validated sucessfully", "N/A" )
+      
+    
+    case 'GET':
+      
   }
-
-
 }
   
 
