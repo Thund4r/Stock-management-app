@@ -1,10 +1,25 @@
+
+.ordersContainer{
+    display:flex;
+    justify-content: center;
+    border: 5px solid blue;
+    width: 55%;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
 .actionToolbar{
     display: flex;
     border: 1px solid black;
-    justify-content: space-between;  /* equal space between items */
+    justify-content: space-between; 
+    width: 100%;
+
+    
 }
 
 .actionButtonContainer{
     display:flex;
-    border:1px solid black;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
