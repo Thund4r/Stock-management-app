@@ -1,5 +1,7 @@
 export function BulkEditButton(){
     return (
-        <button>Placeholder</button>
+        <div>
+            <button>Placeholder</button>
+        </div>        
     )
 }
