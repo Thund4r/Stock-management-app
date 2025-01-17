@@ -68,7 +68,7 @@ export default function search({initial, categories}) {
 
 export async function getServerSideProps(context) {
 
-    const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=&name=`, {
+    const response = await fetch(`http://localhost:8888/.netlify/functions/products?name=`, {
         method: "GET"
     });
     

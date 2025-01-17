@@ -25,8 +25,9 @@ export default function Home({initial}) {
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
         <ClickableCard data={initial} title = ""/>
+        <button onClick={() => fetch(`http://localhost:8888/.netlify/functions/confirmation`)}> CLICK ME </button>
       </main>
-
+      
       <Cart cart={cart}/>
       
 
@@ -35,7 +36,7 @@ export default function Home({initial}) {
 }
 export async function getServerSideProps() {
 
-  const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=&name=`, {
+  const response = await fetch(`http://localhost:8888/.netlify/functions/products?name=`, {
       method: "GET"
   });
   const initial = await response.json();

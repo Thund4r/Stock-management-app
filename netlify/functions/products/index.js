@@ -4,7 +4,7 @@ import { ddbDocClient } from "./ddbDocClient.js";
 /**
  * 
  */
-export const handler = async (event, context) => {
+export const handler = async (event) => {
 
     let params;
     let command;
@@ -41,8 +41,9 @@ export const handler = async (event, context) => {
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
             let name = query.get("name");
-            let category = query.get("category");
-            if (category && category !== "null") {
+            let category = query.getAll("category");
+            if (category && category.length !== 0) {
+                console.log("Cat provided")
                 // When category is provided
                 const expressionValues = {};
                 const placeholders = category.map((category, index) => {
@@ -59,6 +60,7 @@ export const handler = async (event, context) => {
                 command = new ScanCommand(params);
             } 
             else {
+                console.log("cat not porv")
                 // When category is not provided
                 params = {
                     TableName: "ProductsDB",

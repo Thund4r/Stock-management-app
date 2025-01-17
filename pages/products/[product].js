@@ -33,7 +33,7 @@ export default function Page() {
     <div className="productPrice">
       <b>
         Price
-      </b> 
+      </b>
       <div>
         {product.Price}
       </div>
