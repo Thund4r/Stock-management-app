@@ -1,11 +1,8 @@
-import {
-  TransactWriteCommand,
-  TransactGetCommand,
-  TransactUpdateCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { TransactWriteCommand, TransactGetCommand, TransactUpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 import { factoryHttpRes } from "utility/Utils.js";
-import { GetItemCommand } from "@aws-sdk/client-dynamodb";
+import { TransactionCanceledException, DynamoDBServiceException } from "@aws-sdk/client-dynamodb";
+import { update } from "lodash";
 
 // payload of information sent to orderDB from customer side.
 // --------------------------------------
@@ -33,20 +30,34 @@ const totalPriceCalc = (cart) => {
   return totalPrice;
 };
 
+//generates a list of objects within the range of the given primary keys to delete
+const createOrderDeleteList = (bottomRange, topRange) => {
+  transactWriteList = [];
+  for (let num = bottomRange; num <= topRange; num++) {
+    const obj = {
+      Delete: {
+        TableName: "OrderDB",
+        Key: {
+          orderID: num.toString(),
+        },
+        ConditionExpression: "attribute_exists(orderID)",
+      },
+    };
+    transactWriteList.push(obj);
+  }
+  return transactWriteList;
+};
+
 //This is how you're supposed declare the function for AWS Lambda to know which function to use when the API is called.
 export const handler = async (event) => {
   //the .httpmethod attribute only exists because AWS Lambda defines that attribute for the event object it passes into the handler function when it calls it.
   switch (event.httpMethod) {
+    //test this method to see if it works as you expect it to.
     case "POST":
       console.log(Date.now());
       console.log("fetch received. Executing POST request...");
       if (event.headers["content-type"] !== "application/json") {
-        return factoryHttpRes(
-          415,
-          "False, unsupported media type",
-          "Ensure the headers object has the appropriate header",
-          "Content-Type must be application/json"
-        );
+        return factoryHttpRes(415, "False, unsupported media type", "Ensure the headers object has the appropriate header", "Content-Type must be application/json");
       }
       console.log("Parsing JSON to JS object...");
       const orderData = JSON.parse(event.body);
@@ -65,19 +76,9 @@ export const handler = async (event) => {
         }
 
         if (typeof value === "string" && value.length === 0) {
-          return factoryHttpRes(
-            400,
-            "False, received data was malformed",
-            "Ensure all string fields contain at least one character",
-            "Payload: One or more string field is of zero-length length"
-          );
+          return factoryHttpRes(400, "False, received data was malformed", "Ensure all string fields contain at least one character", "Payload: One or more string field is of zero-length length");
         } else if (Array.isArray(value) && value.length === 0) {
-          return factoryHttpRes(
-            400,
-            "False, received data was malformed",
-            "Cart must must contain one item at least",
-            "payload: Cart array is of zero length"
-          );
+          return factoryHttpRes(400, "False, received data was malformed", "Cart must must contain one item at least", "payload: Cart array is of zero length");
         }
       }
 
@@ -86,44 +87,22 @@ export const handler = async (event) => {
       for (const plain_obj of orderData.cart) {
         for (const [key, value] of Object.entries(plain_obj)) {
           if (typeof value !== "string" && typeof value !== "number") {
-            return factoryHttpRes(
-              400,
-              "False, received data was malformed",
-              "Cart must consist of only string or numerical data type",
-              "Cart: unsupported data type in cart"
-            );
+            return factoryHttpRes(400, "False, received data was malformed", "Cart must consist of only string or numerical data type", "Cart: unsupported data type in cart");
           }
 
           if (typeof value === "string" && value.length === 0) {
-            return factoryHttpRes(
-              400,
-              "False, received data was malformed",
-              "Ensure all string fields contain at least one character",
-              "Payload: One or more string field is of zero-length length"
-            );
+            return factoryHttpRes(400, "False, received data was malformed", "Ensure all string fields contain at least one character", "Payload: One or more string field is of zero-length length");
           } else if (typeof value === "number" && value <= 0) {
-            return factoryHttpRes(
-              400,
-              "False, received data was malformed",
-              "Cart must must contain one item at least",
-              "payload: Cart array is of zero length"
-            );
+            return factoryHttpRes(400, "False, received data was malformed", "Cart must must contain one item at least", "payload: Cart array is of zero length");
           }
         }
       }
 
-      /*
-      1. get all the counts from each database in a single try catch using strong consistent read
-      2. construct params for each of the item for each database 
-      3. call putcommand(param) and use the conditionalexpression to ensure the ID does not exist in a single try catch. handle if an ID already exists in the catch (essentialyl we terminate the API call)
-      4. construct param to target the count in each database
-      5. call updateitem(param) to update each item in database - handle if an item does not update 
-      */
-
       //construct objs to get count from DBs
-      let countOrderDB;
-      let countOrderCartDB;
-      let countOrderArchiveDB;
+      let countOrder;
+      let countOrderCart;
+      let countOrderArchive;
+      let totalOrderInOrderDB;
 
       try {
         //construct param to be used as a way of retrieving values from multiple tables in one atomic operation
@@ -141,11 +120,22 @@ export const handler = async (event) => {
             },
             {
               Get: {
+                TableName: "OrderDB",
+                Key: {
+                  orderID: "totalOrder",
+                },
+                ConsistentRead: true,
+                ConditionExpression: "attribute_exists(orderID)",
+              },
+            },
+            {
+              Get: {
                 TableName: "OrderCartDB",
                 Key: {
                   orderID: "count",
                 },
                 ConsistentRead: true,
+                ConditionExpression: "attribute_exists(orderID)",
               },
             },
             {
@@ -161,32 +151,65 @@ export const handler = async (event) => {
           ],
         };
 
-        const responseGet = await ddbDocClient.send(
-          new TransactGetCommand(GetParam)
-        );
+        const responseGet = await ddbDocClient.send(new TransactGetCommand(GetParam));
 
-        const index_orderDB = 0;
-        const index_orderCartDB = 1;
-        const index_orderArchiveDB = 2;
+        const indices = {
+          orderCount: 0,
+          totalOrder: 1,
+          cartCount: 2,
+          archiveCount: 3,
+        };
 
-        countOrderDB = responseGet.Responses[index_orderDB].Item.value;
-        countOrderCartDB = responseGet.Responses[index_orderCartDB].Item.value;
-        countOrderArchiveDB =
-          responseGet.Responses[index_orderArchiveDB].Item.value;
+        countOrder = responseGet.Responses[indices.orderCount].Item.value;
+        totalOrderInOrderDB = responseGet.Responses[indices.totalOrder].Item.value;
+        countOrderCart = responseGet.Responses[indices.cartCount].Item.value;
+        countOrderArchive = responseGet.Responses[indices.archiveCount].Item.value;
       } catch (err) {
         //figure out what the error is then return a relevant http response to the user. We want to end execution the second an error occurs
         console.log("In Get, Error exception thrown:", err);
       }
 
+
+      const maxNumOrders = 500;
+      if (totalOrderInOrderDB === maxNumOrders) {
+        console.log("We are going to run delete operation");
+        try {
+          const updateTotalOrderObj = {
+            Update: {
+              TableName: "OrderDB",
+              Key: {
+                orderID: "totalOrder",
+              },
+              UpdateExpression: "SET #val = #val - :decrement",
+              ExpressionAttributeNames: { "#val": "value" }, //value is a reserved word in AWS SDK so we must use a placeholder to reference the value attribute in our table
+              ExpressionAttributeValues: { ":decrement": 50 },
+              ConditionExpression: "attribute_exists(orderID)",
+            },
+          };
+          const bottomRange = countOrder - 500; //bottom orderID to start deleting from
+          const topRange = countOrder - 451; //top orderID as last deletion
+          let deleteList = createOrderDeleteList(bottomRange,topRange);
+          deleteList.push(updateTotalOrderObj)
+          const writeParam = {
+            TransactItems: deleteList
+          };
+          const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
+          console.log(responseWrite)
+        } catch (err) {
+          console.error(err);
+          return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
+        }
+      }
+
       try {
         //construct param to be used as a way to write (post and update) to multiple tables in one atomic operation
-        const WriteParam = {
+        const writeParam = {
           TransactItems: [
             {
               Put: {
                 TableName: "OrderDB",
                 Item: {
-                  orderID: countOrderDB.toString(), //might have to conv to string or it could be that countOrderDB is a string
+                  orderID: countOrder.toString(),
                   customerName: orderData.custName,
                   deliveryDate: orderData.delivDate,
                   deliveryStatus: "Pending", //set by default - user has to manually change
@@ -200,7 +223,7 @@ export const handler = async (event) => {
               Put: {
                 TableName: "OrderCartDB",
                 Item: {
-                  orderID: countOrderCartDB.toString(), //might have to conv to string or it could be that countOrderDB is a string
+                  orderID: countOrderCart.toString(),
                   cart: orderData.cart,
                 },
                 ConditionExpression: "attribute_not_exists(orderID)",
@@ -210,7 +233,7 @@ export const handler = async (event) => {
               Put: {
                 TableName: "OrderArchiveDB",
                 Item: {
-                  orderID: countOrderArchiveDB.toString(), //might have to conv to string or it could be that countOrderDB is a string
+                  orderID: countOrderArchive.toString(),
                   customerName: orderData.custName,
                   deliveryDate: orderData.delivDate,
                   deliveryStatus: "Pending", //set by default - user has to manually change
@@ -234,6 +257,18 @@ export const handler = async (event) => {
             },
             {
               Update: {
+                TableName: "OrderDB",
+                Key: {
+                  orderID: "totalOrder",
+                },
+                UpdateExpression: "SET #val = #val + :inc",
+                ExpressionAttributeNames: { "#val": "value" },
+                ExpressionAttributeValues: { ":inc": 1 },
+                ConditionExpression: "attribute_exists(orderID)",
+              },
+            },
+            {
+              Update: {
                 TableName: "OrderCartDB",
                 Key: {
                   orderID: "count",
@@ -258,18 +293,14 @@ export const handler = async (event) => {
             },
           ],
         };
-
-        const responseWrite = await ddbDocClient.send(
-          new TransactWriteCommand(WriteParam)
-        );
+        const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
       } catch (err) {
-        //figure out what the error is then return relevent http response to the user. We want to end execution the second an error occurs
-        console.log("In write, i am going to print the error:", err);
+        console.error(err);
+        return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
       }
 
-      //figure out how you can implement the auto delete at 500 messages saved in orderDB
+      return factoryHttpRes(200, "True", "Successfully added item to tables", "False");
 
-      return factoryHttpRes(200, "msg", "msg");
     case "GET":
   }
 };
