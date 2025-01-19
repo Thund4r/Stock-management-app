@@ -46,7 +46,7 @@ export default function search({initial, categories}) {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                <Group wrap="nowrap">
+                <Group wrap="nowrap" w="80vw" align="flex-start">
                     <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
                     {categories.map(cat => {
                         const checked = searchParams.getAll('category').includes(cat);

@@ -1,26 +1,34 @@
 import { useEffect, useState } from "react";
-import styles from './SearchResult.module.css'
-import { Grid, Col } from '@mantine/core'
+import { Grid, Col, Container } from '@mantine/core'
 
 export default function SearchResult ({name, category, initial}) {
 
     const [content, setContent] = useState(<></>);
 
+    const renderContent = (items) => {
+        if (items.length !== 0){
+            setContent(items.map(item => (
+                <Grid.Col 
+                    span={3} 
+                    
+                    key = {item.Name}>
+                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`}> 
+                        <div>
+                            <b>{item.Name}</b> <br/>
+                            RM {item.Price} <br/>
+                        </div>
+                    </a>
+                </Grid.Col>
+            )));
+        }
+        else {
+            setContent(<div>No results</div>)
+        }
+    }
+
     async function handleGet() {
-        console.log(category.length)
         if (!name && category.length === 0){
-            if (initial.length !== 0){
-                setContent(initial.map(item => (
-                    <Grid.Col span={3} key = {item.Name}>
-                        <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name} className={styles.item}> 
-                            <div className={styles.itemContent}>
-                                <b>{item.Name}</b> <br/>
-                                RM {item.Price} <br/>
-                            </div>
-                        </a>
-                    </Grid.Col>
-                )));
-            }
+            renderContent(initial);
         }
 
         else{
@@ -31,21 +39,7 @@ export default function SearchResult ({name, category, initial}) {
                 method: "GET"
             });
             const data = await response.json();
-            if (data.length !== 0){
-                setContent(data.map(item => (
-                    <Grid.Col span={3} key = {item.Name}>
-                        <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} className={styles.item}> 
-                            <div className={styles.itemContent}>
-                                <b>{item.Name}</b> <br/>
-                                RM {item.Price} <br/>
-                            </div>
-                        </a>
-                    </Grid.Col>
-                )));
-            }
-            else {
-                setContent(<div>No results</div>)
-            }
+            renderContent(data);
         }
 
     }
@@ -60,9 +54,8 @@ export default function SearchResult ({name, category, initial}) {
     {/* <div className = {styles.result}>
         {content}
     </div> */}
-    
-    <Grid justify="flex-start" gutter="30">
-        {content}
-    </Grid>
+        <Grid w="80%" justify="flex-start" gutter="40">
+            {content}
+        </Grid>
     </>)
 }
