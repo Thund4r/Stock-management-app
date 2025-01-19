@@ -14,6 +14,21 @@ export default function Home({initial}) {
     setCart(JSON.parse(localStorage.getItem("cart")) || [])
   }, []);
 
+  const testFunction = () => {
+    const payload = JSON.stringify({
+        custName: "fake",
+        cart: cart,
+        delivDate: "1/1/2003",
+        outName:"TN1",
+    });
+    const response = fetch('http://localhost:8888/.netlify/functions/orders', {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: payload
+    })
+    console.log(response)
+  }
+
   return (
     <div className="container">
       <Head>
@@ -25,7 +40,7 @@ export default function Home({initial}) {
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
         <ClickableCard data={initial} title = ""/>
-        <button onClick={() => fetch(`http://localhost:8888/.netlify/functions/confirmation`)}> CLICK ME </button>
+        <button onClick={() => testFunction()}> CLICK ME </button>
       </main>
       
       <Cart cart={cart}/>
@@ -34,6 +49,7 @@ export default function Home({initial}) {
     </div>
   )
 }
+
 export async function getServerSideProps() {
 
   const response = await fetch(`http://localhost:8888/.netlify/functions/products?name=`, {

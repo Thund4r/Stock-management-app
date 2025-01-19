@@ -25,7 +25,7 @@ import { update } from "lodash";
 const totalPriceCalc = (cart) => {
   let totalPrice = 0;
   for (const product of cart) {
-    totalPrice += product.productQty * product.pricePerPiece;
+    totalPrice += product.quantity * product.price;
   }
   return totalPrice;
 };
@@ -54,15 +54,11 @@ export const handler = async (event) => {
   switch (event.httpMethod) {
     //test this method to see if it works as you expect it to.
     case "POST":
-      console.log(Date.now());
-      console.log("fetch received. Executing POST request...");
       if (event.headers["content-type"] !== "application/json") {
         return factoryHttpRes(415, "False, unsupported media type", "Ensure the headers object has the appropriate header", "Content-Type must be application/json");
       }
-      console.log("Parsing JSON to JS object...");
       const orderData = JSON.parse(event.body);
 
-      console.log("Running validation logic...");
       //validates payload data
       //To do: make sure to check if you are given a string containing just blank spaces (technically not empty but not useful)
       for (const [key, value] of Object.entries(orderData)) {
@@ -166,19 +162,13 @@ export const handler = async (event) => {
         countOrderArchive = responseGet.Responses[indices.archiveCount].Item.value;
       } catch (err) {
         //figure out what the error is then return a relevant http response to the user. We want to end execution the second an error occurs
-        console.log("In Get, Error exception thrown:", err);
       }
 
 
       const maxNumOrders = 500;
       if (totalOrderInOrderDB === maxNumOrders) {
-        console.log("We are going to run delete operation");
         const bottomRangeTest = countOrder - 500; //testing purposes only so delete when done testing
         const topRangeTest = countOrder - 451; //testing purposes only so delete when done testing
-        console.log("We are going to run delete operation. Here are the values before we execute the deletion operation");
-        console.log("totalOrders:", totalOrderInOrderDB) //expected to be called 500 items in database
-        console.log("countOrder:", countOrder) //expected to be called every interval of 50 after 500
-        console.log("Index range deleted:", bottomRangeTest, "to", topRangeTest)
         try {
           const updateTotalOrderObj = {
             Update: {
@@ -200,7 +190,6 @@ export const handler = async (event) => {
             TransactItems: deleteList
           };
           const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
-          console.log(responseWrite)
         } catch (err) {
           console.error(err);
           return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
@@ -304,6 +293,20 @@ export const handler = async (event) => {
         console.error(err);
         return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
       }
+      
+      const order_items = orderData.cart.map(item => `${item.product} (${item.quantity})`).join(", ");
+      const payload = JSON.stringify({
+        order_id: `#${countOrderArchive.toString()}`,
+        order_items: order_items,
+        order_delivery: orderData.delivDate,
+        order_total: `RM ${totalPriceCalc(orderData.cart)}`,
+        order_customer: orderData.outName
+      });
+      const responseConf = await fetch('http://localhost:8888/.netlify/functions/confirmation', {
+        method: "POST",
+        body: payload
+      })
+      
 
       return factoryHttpRes(200, "True", "Successfully added item to tables", "False");
 
