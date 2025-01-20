@@ -1,8 +1,7 @@
-import { TransactWriteCommand, TransactGetCommand, TransactUpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { TransactWriteCommand, TransactGetCommand} from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 import { factoryHttpRes } from "utility/Utils.js";
 import { TransactionCanceledException, DynamoDBServiceException } from "@aws-sdk/client-dynamodb";
-import { update } from "lodash";
 
 // payload of information sent to orderDB from customer side.
 // --------------------------------------
@@ -103,7 +102,7 @@ export const handler = async (event) => {
       let countOrderCart;
       let countOrderArchive;
       let totalOrderInOrderDB;
-
+      
       try {
         //construct param to be used as a way of retrieving values from multiple tables in one atomic operation
         const GetParam = {
@@ -173,6 +172,12 @@ export const handler = async (event) => {
       const maxNumOrders = 500;
       if (totalOrderInOrderDB === maxNumOrders) {
         console.log("We are going to run delete operation");
+        const bottomRangeTest = countOrder - 500; //testing purposes only so delete when done testing
+        const topRangeTest = countOrder - 451; //testing purposes only so delete when done testing
+        console.log("We are going to run delete operation. Here are the values before we execute the deletion operation");
+        console.log("totalOrders:", totalOrderInOrderDB) //expected to be called 500 items in database
+        console.log("countOrder:", countOrder) //expected to be called every interval of 50 after 500
+        console.log("Index range deleted:", bottomRangeTest, "to", topRangeTest)
         try {
           const updateTotalOrderObj = {
             Update: {
@@ -302,5 +307,7 @@ export const handler = async (event) => {
       return factoryHttpRes(200, "True", "Successfully added item to tables", "False");
 
     case "GET":
+
   }
 };
+
