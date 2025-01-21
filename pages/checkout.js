@@ -3,13 +3,16 @@ import Header from '@components/Header'
 import { useEffect, useState } from "react";
 import QtSelector from "@components/QtSelector";
 import styles from './checkout.module.css';
-import { TextInput } from '@mantine/core';
+import { ButtonGroup, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 
 
 export default function Cart() {
-    const [cart, setCart] = useState([])
-    const [value, setValue] = useState(null);
+    const [cart, setCart] = useState([]);
+    const [date, setDate] = useState(null);
+    const [customerName, setCustomerName] = useState("");
+    const [outletName, setOutletName] = useState("");
+
     useEffect(() => {
         setCart(JSON.parse(localStorage.getItem("cart")) || [])
       }, []);
@@ -35,6 +38,26 @@ export default function Cart() {
       return (total)
     }
 
+    const submitForm = async (event) => {
+      event.preventDefault();
+
+      const payload = JSON.stringify({
+        custName: customerName,
+        cart: cart,
+        delivDate: date.toLocaleDateString("en-GB"),
+        outName: outletName,
+      })
+
+      console.log(payload)
+      
+      const response = fetch('http://localhost:8888/.netlify/functions/orders', {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: payload
+      })
+
+    }
+
     return(
         <div className="container">
           <Head>
@@ -46,13 +69,14 @@ export default function Cart() {
           <p>The cart is empty.</p>
         ) : (
           <ul>
-            <form>
+            <form onSubmit={submitForm}>
             <div className={styles.formComponent}>
             <h4>Customer</h4>
             <TextInput 
               id="cusName"
               label="Name"
               required
+              onChange={(e) => setCustomerName(e.target.value)}
             />
             </div>
 
@@ -73,8 +97,9 @@ export default function Cart() {
 
             <div className={styles.formComponent}>
               <DateInput 
-              value={value} 
-              onChange={setValue} 
+              value={date} 
+              valueFormat="YYYY/MM/DD"
+              onChange={setDate} 
               required
               label="Select your delivery/pickup date"
               />
@@ -85,6 +110,7 @@ export default function Cart() {
               id="outName"
               label="Insert Your Outlet Name (CJ1, CJ2, 10Thai, 10PotsCJ, ICM, PJ1, 10PotsPJ)"
               required
+              onChange={(e) => setOutletName(e.target.value)}
             />
             </div>
 
@@ -95,7 +121,8 @@ export default function Cart() {
               <div>RM {totalPrice()}</div>
               </div>
             </div>
-
+            
+            <button>Place Order</button>
             </form>
           </ul>
         )}

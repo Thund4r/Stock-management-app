@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './Cart.module.css';
+import QtSelector from './QtSelector';
 export default function Cart({cart = []}) {
 
     const [cartOpen, setCartOpen] = useState(false);

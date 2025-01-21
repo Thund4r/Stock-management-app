@@ -42,6 +42,7 @@ export const handler = async (event) => {
             const query = new URLSearchParams(event.rawQuery);
             let name = query.get("name");
             let category = query.getAll("category");
+            let single = query.get("single");
             if (category && category.length !== 0) {
                 console.log("Cat provided")
                 // When category is provided
@@ -59,8 +60,21 @@ export const handler = async (event) => {
                 };
                 command = new ScanCommand(params);
             } 
+            else if (single === "True" && name && name !== "null") {
+                params = {
+                    TableName: "ProductsDB",
+                    IndexName: "Name-Category-index",
+                    KeyConditionExpression: "#name = :n",
+                    ExpressionAttributeValues: {
+                        ":n": name,
+                    },
+                    ExpressionAttributeNames: {
+                        "#name": "Name", 
+                    },
+                };
+                command = new QueryCommand(params);
+            }
             else {
-                console.log("cat not porv")
                 // When category is not provided
                 params = {
                     TableName: "ProductsDB",

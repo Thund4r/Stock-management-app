@@ -12,7 +12,7 @@ export default function SearchResult ({name, category, initial}) {
                     span={3} 
                     
                     key = {item.Name}>
-                    <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`}> 
+                    <a href = {`/products/${item.Name}`}> 
                         <div>
                             <b>{item.Name}</b> <br/>
                             RM {item.Price} <br/>
