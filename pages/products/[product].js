@@ -21,6 +21,8 @@ export default function Page({ item }) {
     }
   }, [router.query.product]);
 
+  console.log(product)
+
   if (product){
     content = (<>
     <div className="productName">
@@ -38,9 +40,10 @@ export default function Page({ item }) {
       </div>
     </div>
     <div className="productQuantity">
-      <div>
+      <div >
         Quantity 
       </div>
+      {product.Stock<10 && <div style={{marginRight:"80px"}}>{product.Stock} left</div>}
       <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)}/>
     </div>
     </>

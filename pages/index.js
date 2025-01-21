@@ -43,7 +43,7 @@ export default function Home({initial}) {
         <button onClick={() => testFunction()}> CLICK ME </button>
       </main>
       
-      <Cart cart={cart}/>
+      <Cart cart={cart} setCart={setCart}/>
       
 
     </div>

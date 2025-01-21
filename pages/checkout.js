@@ -3,7 +3,7 @@ import Header from '@components/Header'
 import { useEffect, useState } from "react";
 import QtSelector from "@components/QtSelector";
 import styles from './checkout.module.css';
-import { ButtonGroup, TextInput } from '@mantine/core';
+import { TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 
 
@@ -47,8 +47,6 @@ export default function Cart() {
         delivDate: date.toLocaleDateString("en-GB"),
         outName: outletName,
       })
-
-      console.log(payload)
       
       const response = fetch('http://localhost:8888/.netlify/functions/orders', {
         method: "POST",

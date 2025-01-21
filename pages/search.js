@@ -59,7 +59,7 @@ export default function search({initial, categories}) {
                     </Stack>
                     <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
                 </Group>
-            <Cart cart = {cart}/>
+            <Cart cart = {cart} setCart = {setCart}/>
             </main>
         </div>
     );

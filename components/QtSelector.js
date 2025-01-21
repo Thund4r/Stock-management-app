@@ -22,7 +22,7 @@ const decrement = () => {
 const inputChange = (event) => {
     const value = event.target.value;
     if (value === "" || /^[0-9]+$/.test(value)) { //RegEx expression here is ^(match at beginning of text) [0-9](only numbers between 0 and 9 for each digit) +(one or more digits) and $(match up to the end of text)
-      const newQuantity = value === "" ? 0 : parseInt(value, 10);
+      const newQuantity = value === "" ? 1 : Math.max(1, parseInt(value, 10));
       setQuantity(newQuantity);
       onQuantityChange(newQuantity);
     }
