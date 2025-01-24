@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Grid, Col, Container } from '@mantine/core'
 
-export default function SearchResult ({name, category, initial}) {
+export default function SearchResult ({name, category, products}) {
 
     const [content, setContent] = useState(<></>);
 
@@ -26,20 +26,28 @@ export default function SearchResult ({name, category, initial}) {
         }
     }
 
-    async function handleGet() {
+    const handleGet = async() => {
         if (!name && category.length === 0){
-            renderContent(initial);
+            renderContent(products);
         }
 
         else{
-            const categories = category.map(cat => 
-                `category=${cat}&`
-            ).join("")
-            const response = await fetch(`/.netlify/functions/products?${categories}name=${name}`, {
-                method: "GET"
-            });
-            const data = await response.json();
+            let data = products
+            if (category && category.length !== 0){
+                data = data.filter(item => category.some(cat => item.Category.includes(cat)));
+            }
+            if (name && name !== "null") {
+                data = data.filter(item => item.Name.toLowerCase().includes(name.toLowerCase()));
+            }
             renderContent(data);
+            // const categories = category.map(cat => 
+            //     `category=${cat}&`
+            // ).join("")
+            // const response = await fetch(`/.netlify/functions/products?${categories}name=${name}`, {
+            //     method: "GET"
+            // });
+            // const data = await response.json();
+            // renderContent(data);
         }
 
     }
@@ -50,10 +58,7 @@ export default function SearchResult ({name, category, initial}) {
     }, [name, category]);
 
     return (
-        <>
-    {/* <div className = {styles.result}>
-        {content}
-    </div> */}
+    <>
         <Grid w="80%" justify="flex-start" gutter="40">
             {content}
         </Grid>

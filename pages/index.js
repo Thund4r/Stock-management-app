@@ -5,14 +5,29 @@ import CustomerNav from '@components/CustomerNav'
 import ClickableCard from '@components/ClickableCard'
 import Cart from '@components/Cart'
 
-export default function Home({initial}) {
+export default function Home() {
 
   const [cart, setCart] = useState([]);
-
+  const [products, setProducts] = useState(null)
 
   useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem("cart")) || [])
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+    checkProducts();
   }, []);
+
+  const checkProducts = async () => {
+    if (!(sessionStorage.getItem("products"))){
+      const response = await fetch(`http://localhost:8888/.netlify/functions/products`, {
+          method: "GET"
+      });
+      const products = await response.json();
+      sessionStorage.setItem("products", JSON.stringify(products));
+      setProducts(products)
+    }
+    else{
+      setProducts(JSON.parse(sessionStorage.getItem("products")))
+    }
+  }
 
   const testFunction = () => {
     const payload = JSON.stringify({
@@ -39,27 +54,13 @@ export default function Home({initial}) {
       <main>
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
-        <ClickableCard data={initial} title = ""/>
-        <button onClick={() => testFunction()}> CLICK ME </button>
+        {products && <ClickableCard data={products} title="" />}
+        <button onClick={() => checkProducts()}> CLICK ME </button>
       </main>
       
       <Cart cart={cart} setCart={setCart}/>
-      
 
     </div>
   )
 }
 
-export async function getServerSideProps() {
-
-  const response = await fetch(`http://localhost:8888/.netlify/functions/products?name=`, {
-      method: "GET"
-  });
-  const initial = await response.json();
-
-  return {
-      props: {
-          initial,
-      },
-  };
-}
