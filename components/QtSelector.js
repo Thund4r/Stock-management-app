@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import styles from './QtSelector.module.css';
 
-export default function QtSelector({onQuantityChange, initialQuant = 1}) {
+export default function QtSelector({onQuantityChange, initialQuant = 1, maxQuant = 9000}) {
 
 const [quantity, setQuantity] = useState(initialQuant);
 
 const increment = () => {
-    const newQuantity = quantity + 1;
+    if (quantity < maxQuant){
+        const newQuantity = quantity + 1;
     setQuantity(newQuantity);
     onQuantityChange(newQuantity);
+    }
 };
 
 const decrement = () => {
-    if (quantity > 1) {
+    if (quantity > 1 ) {
         const newQuantity = quantity - 1;
         setQuantity(newQuantity);
         onQuantityChange(newQuantity);
@@ -21,10 +23,20 @@ const decrement = () => {
 
 const inputChange = (event) => {
     const value = event.target.value;
-    if (value === "" || /^[0-9]+$/.test(value)) { //RegEx expression here is ^(match at beginning of text) [0-9](only numbers between 0 and 9 for each digit) +(one or more digits) and $(match up to the end of text)
-      const newQuantity = value === "" ? 0 : parseInt(value, 10);
-      setQuantity(newQuantity);
-      onQuantityChange(newQuantity);
+    if (value === "" || /^[0-9]+$/.test(value)) {
+        const newQuantity = value === "" ? "" : Math.min(maxQuant, Math.max(1, parseInt(value, 10)));
+        setQuantity(newQuantity);
+        if (newQuantity !== "") {
+            onQuantityChange(newQuantity);
+        }
+    }
+};
+
+const handleBlur = () => {
+    console.log(quantity)
+    if (quantity === "") {
+        setQuantity(1);
+        onQuantityChange(1);
     }
 };
 
@@ -35,7 +47,7 @@ const inputChange = (event) => {
                 className={styles.input}
                 type="text"
                 value={quantity}
-                
+                onBlur={handleBlur}
                 onChange={inputChange}
             />
             <button className={styles.button} onClick={increment} type="button"> + </button>

@@ -11,16 +11,35 @@ import { Group, Stack } from '@mantine/core';
 
 
 
-export default function search({initial, categories}) {
+export default function search() {
     const searchParams = useSearchParams();
     const {replace} = useRouter();
     const pathname = usePathname();
     const [cart, setCart] = useState([]);
+    const [products, setProducts] = useState(null);
+    const [categories, setCategories] = useState(null)
 
     useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem("cart")) || [])
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+    checkProducts();
     }, []);
     
+
+    const checkProducts = async () => {
+        if (!(sessionStorage.getItem("products"))){
+          const response = await fetch(`http://localhost:8888/.netlify/functions/products`, {
+              method: "GET"
+          });
+          const products = await response.json();
+          sessionStorage.setItem("products", JSON.stringify(products));
+          setProducts(products)
+          setCategories([...new Set(products.map(item => item.Category))]);
+        }
+        else{
+          setProducts(JSON.parse(sessionStorage.getItem("products")))
+          setCategories([...new Set(JSON.parse(sessionStorage.getItem("products")).map(item => item.Category))]);
+        }
+      }
 
     function filterClick(cat, checked){
         const params = new URLSearchParams(searchParams.toString());
@@ -46,9 +65,9 @@ export default function search({initial, categories}) {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                <Group wrap="nowrap">
+                <Group wrap="nowrap" w="80vw" align="flex-start">
                     <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
-                    {categories.map(cat => {
+                    {categories && categories.map(cat => {
                         const checked = searchParams.getAll('category').includes(cat);
                         return(
                         <Group wrap="nowrap" key={cat}>
@@ -57,28 +76,10 @@ export default function search({initial, categories}) {
                         </Group>)
                     })}
                     </Stack>
-                    <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} initial = {initial}/>
+                    {products && <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
                 </Group>
-            <Cart cart = {cart}/>
+            <Cart cart = {cart} setCart = {setCart}/>
             </main>
         </div>
     );
-}
-
-
-export async function getServerSideProps(context) {
-
-    const response = await fetch(`http://localhost:8888/.netlify/functions/products?category=&name=`, {
-        method: "GET"
-    });
-    
-    const initial = await response.json();
-    const categories = [...new Set(initial.map(item => item.Category))];
-
-    return {
-        props: {
-            initial,
-            categories,
-        },
-    };
 }

@@ -23,6 +23,7 @@
     "@mantine/dates": "^7.15.2",
     "@mantine/hooks": "^7.15.2",
     "@netlify/plugin-nextjs": "^5.9.0",
+    "dotenv": "^16.4.7",
     "i": "^0.3.7",
     "lodash": "^4.17.21",
     "next": "^15.0.0",

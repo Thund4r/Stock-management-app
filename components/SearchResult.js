@@ -1,51 +1,53 @@
 import { useEffect, useState } from "react";
-import styles from './SearchResult.module.css'
-import { Grid, Col } from '@mantine/core'
+import { Grid, Col, Container } from '@mantine/core'
 
-export default function SearchResult ({name, category, initial}) {
+export default function SearchResult ({name, category, products}) {
 
     const [content, setContent] = useState(<></>);
 
-    async function handleGet() {
-        console.log(category.length)
+    const renderContent = (items) => {
+        if (items.length !== 0){
+            setContent(items.map(item => (
+                <Grid.Col 
+                    span={3} 
+                    
+                    key = {item.Name}>
+                    <a href = {`/products/${item.Name}`}> 
+                        <div>
+                            <b>{item.Name}</b> <br/>
+                            RM {item.Price} <br/>
+                        </div>
+                    </a>
+                </Grid.Col>
+            )));
+        }
+        else {
+            setContent(<div>No results</div>)
+        }
+    }
+
+    const handleGet = async() => {
         if (!name && category.length === 0){
-            if (initial.length !== 0){
-                setContent(initial.map(item => (
-                    <Grid.Col span={3} key = {item.Name}>
-                        <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} key = {item.Name} className={styles.item}> 
-                            <div className={styles.itemContent}>
-                                <b>{item.Name}</b> <br/>
-                                RM {item.Price} <br/>
-                            </div>
-                        </a>
-                    </Grid.Col>
-                )));
-            }
+            renderContent(products);
         }
 
         else{
-            const categories = category.map(cat => 
-                `category=${cat}&`
-            ).join("")
-            const response = await fetch(`/.netlify/functions/products?${categories}name=${name}`, {
-                method: "GET"
-            });
-            const data = await response.json();
-            if (data.length !== 0){
-                setContent(data.map(item => (
-                    <Grid.Col span={3} key = {item.Name}>
-                        <a href = {`/products/${encodeURIComponent(JSON.stringify(item))}`} className={styles.item}> 
-                            <div className={styles.itemContent}>
-                                <b>{item.Name}</b> <br/>
-                                RM {item.Price} <br/>
-                            </div>
-                        </a>
-                    </Grid.Col>
-                )));
+            let data = products
+            if (category && category.length !== 0){
+                data = data.filter(item => category.some(cat => item.Category.includes(cat)));
             }
-            else {
-                setContent(<div>No results</div>)
+            if (name && name !== "null") {
+                data = data.filter(item => item.Name.toLowerCase().includes(name.toLowerCase()));
             }
+            renderContent(data);
+            // const categories = category.map(cat => 
+            //     `category=${cat}&`
+            // ).join("")
+            // const response = await fetch(`/.netlify/functions/products?${categories}name=${name}`, {
+            //     method: "GET"
+            // });
+            // const data = await response.json();
+            // renderContent(data);
         }
 
     }
@@ -56,13 +58,9 @@ export default function SearchResult ({name, category, initial}) {
     }, [name, category]);
 
     return (
-        <>
-    {/* <div className = {styles.result}>
-        {content}
-    </div> */}
-    
-    <Grid justify="flex-start" gutter="30">
-        {content}
-    </Grid>
+    <>
+        <Grid w="80%" justify="flex-start" gutter="40">
+            {content}
+        </Grid>
     </>)
 }
