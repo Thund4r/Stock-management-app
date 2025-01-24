@@ -21,7 +21,6 @@ export default function Page({ item }) {
     }
   }, [router.query.product]);
 
-  console.log(product)
 
   if (product){
     content = (<>
@@ -44,14 +43,14 @@ export default function Page({ item }) {
         Quantity 
       </div>
       {product.Stock<10 && <div style={{marginRight:"80px"}}>{product.Stock} left</div>}
-      <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)}/>
+      <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)} maxQuant={product.Stock}/>
     </div>
     </>
     )
   }
 
   const addToCart = () => {
-    const newItem = {product: product.Name, quantity: parseInt(quantity), price: parseInt(product.Price)};
+    const newItem = {product: product.Name, quantity: parseInt(quantity), price: parseInt(product.Price), stock: parseInt(product.Stock)};
     const itemExists = cart.findIndex((item) => item.product === newItem.product);
     if (itemExists == -1){
       const newCart = [...cart, newItem];

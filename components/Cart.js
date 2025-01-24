@@ -40,7 +40,7 @@ export default function Cart({cart = [], setCart}) {
               <b style={{ display: "block", marginBottom: "16px"}}>RM {item.price}</b> 
               <div style={{cursor:"pointer", color:"rgba(0,0,0,0.7)"}}onClick={() => {removeItem(item)}}>delete</div>
             </Grid>
-            <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} initialQuant={item.quantity}/>
+            <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} initialQuant={item.quantity} maxQuant={item.stock}/>
           </div>
             ))}
         <a className={`${styles.checkoutButton} ${cartOpen ? styles.open : ""}`} href='/checkout'> Checkout </a>
