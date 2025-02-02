@@ -17,7 +17,7 @@ export default function page() {
 
   const checkProducts = async () => {
     if (!(sessionStorage.getItem("products"))){
-      const response = await fetch(`http://localhost:8888/.netlify/functions/products`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
           method: "GET"
       });
       const products = await response.json();
@@ -29,12 +29,6 @@ export default function page() {
     }
   }
 
-  const testFunction = () => {
-    const response = fetch('http://localhost:8888/.netlify/functions/revalidate', {
-      method: "GET"
-    })
-    console.log(response)
-  }
 
   return (
     <div className="container">
@@ -47,7 +41,7 @@ export default function page() {
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
         {products && <ClickableCard data={products} title="" />}
-        <button onClick={() => testFunction()}> CLICK ME </button>
+        <button> CLICK ME </button>
       </main>
       
       <Cart cart={cart} setCart={setCart}/>

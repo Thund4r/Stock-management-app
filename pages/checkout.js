@@ -48,7 +48,7 @@ export default function page() {
         outName: outletName,
       })
       
-      const response = fetch('http://localhost:8888/.netlify/functions/orders', {
+      const response = fetch('${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
         body: payload

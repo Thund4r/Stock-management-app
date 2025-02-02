@@ -75,7 +75,7 @@ export default function page({ item }) {
 }
 
 export async function getStaticPaths() {
-  const response = await fetch(`http://localhost:8888/.netlify/functions/products`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
     method: "GET"
 });
   const products = await response.json();
@@ -88,7 +88,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const response = await fetch(`http://localhost:8888/.netlify/functions/products?name=${params.product}&single=True`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${params.product}&single=True`, {
     method: "GET"
 });
   const item = (await response.json())[0];

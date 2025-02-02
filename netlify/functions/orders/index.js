@@ -302,7 +302,7 @@ export const handler = async (event) => {
         order_total: `RM ${totalPriceCalc(orderData.cart)}`,
         order_customer: orderData.outName
       });
-      const responseConf = await fetch('http://localhost:8888/.netlify/functions/confirmation', {
+      const responseConf = await fetch('${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/confirmation', {
         method: "POST",
         body: payload
       })

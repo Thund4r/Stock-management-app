@@ -31,7 +31,7 @@ async function sendPostReq(){
 
     //this might need ot be in a try catch
     try{
-        const response = await fetch("http://localhost:8888/.netlify/functions/orders", {
+        const response = await fetch("${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders", {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {
