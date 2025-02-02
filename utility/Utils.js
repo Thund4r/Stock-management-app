@@ -8,4 +8,3 @@ export const factoryHttpRes = (statCode, success, message, error) => {
         })
     }
 }
-
