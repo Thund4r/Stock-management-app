@@ -13,7 +13,7 @@ const createPagesToRender = (orders) => {
 
 export const getStaticPaths = async () => {
   try {
-    let response = await fetch("http://localhost:8888/.netlify/functions/orders", {
+    let response = await fetch("${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders", {
       method: "GET",
     });
     response = await response.json();
@@ -31,7 +31,7 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }) => {
   try{
-    let response = await fetch(`http://localhost:8888/.netlify/functions/orderID?id=${params.id}`, { method: "GET" });
+    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orderID?id=${params.id}`, { method: "GET" });
   
     response = await response.json()
     if(!response.items){
