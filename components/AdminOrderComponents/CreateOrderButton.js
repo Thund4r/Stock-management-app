@@ -14,6 +14,24 @@
 3. object body should contain a header - content type, body - for the payload (paylaod will be written in JS but stringified to convert to JSON) and the method - post.
 */
 
+// used to test orders API - you should understand how this actually works under the hood (the use of recursive functions in tandem with async operations is tricky), it'll be good for you.
+// function repeatWithDelay(callback, delay, times, count){
+//     if (times <= 0) return;
+    
+//     console.log("count:", count)
+//     console.log("The current date and time:", new Date().toLocaleString('en-US', { 
+//         hour: 'numeric',
+//         minute: 'numeric',
+//         second: 'numeric',
+//         hour12: false 
+//     }))
+
+//     setTimeout(async () => {
+//       await callback();
+//       repeatWithDelay(callback, delay, times - 1, count + 1);
+//     }, delay);
+//   }
+
 
 
 async function sendPostReq(){
@@ -21,12 +39,12 @@ async function sendPostReq(){
         custName: "fake",
         cart: [{
             productName: "test product name 1",
-            productQty: 5,
-            pricePerPiece: 5 
+            quantity: 5,
+            price: 5 
             }, {
             productName: "test product name 2",
-            productQty: 2,
-            pricePerPiece: 10 
+            quantity: 2,
+            price: 10 
             }],
         delivDate: "1/1/2003",
         outName:"TN1", 
@@ -35,9 +53,10 @@ async function sendPostReq(){
     console.log("Constructed payload")
     console.log("About to send fetch request")
 
-    //this might need ot be in a try catch
+
     try{
-        const response = await fetch("http://localhost:8888/.netlify/functions/orders", {
+        //change back to orders after done testing using the test API
+        const response = await fetch("../../.netlify/functions/orders", {
             method: "POST",
             body: JSON.stringify(payload),
             headers: {
@@ -59,13 +78,12 @@ async function sendPostReq(){
     }
 }
 
-
+// repeatWithDelay(sendPostReq, 2000, 5, 0)
 export function Test(){
     return(
         <div>
-            <button onClick = {sendPostReq}> Click to test post request</button>
+            <button onClick = {() =>{sendPostReq()}}> Click to test post request</button>
         </div>
-        
         )
 }
 
