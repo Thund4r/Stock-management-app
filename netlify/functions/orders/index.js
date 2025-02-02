@@ -1,30 +1,15 @@
-import { TransactWriteCommand, TransactGetCommand} from "@aws-sdk/lib-dynamodb";
+import { TransactWriteCommand, TransactGetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
-import { factoryHttpRes } from "utility/Utils.js";
-import { TransactionCanceledException, DynamoDBServiceException } from "@aws-sdk/client-dynamodb";
+import { factoryHttpRes } from "utility/utils.js";
 
-// payload of information sent to orderDB from customer side.
-// --------------------------------------
-// const payload = {
-//   custName: "fake",
-//   cart: [{
-//       productName: "test product name 1",
-//       productQty: 5,
-//       pricePerPiece: 5
-//       }, {
-//       productName: "test product name 2",
-//       productQty: 2,
-//       pricePerPiece: 10
-//       }],
-//   delivDate: "1/1/2003",
-//   outName:"TN1",
-// }
-// --------------------------------------
+
+
+//conforms to REST Convention but netlify doesn't support fully support REST APIs.
 
 const totalPriceCalc = (cart) => {
   let totalPrice = 0;
   for (const product of cart) {
-    totalPrice += product.productQty * product.pricePerPiece;
+    totalPrice += product.quantity * product.price;
   }
   return totalPrice;
 };
@@ -47,21 +32,26 @@ const createOrderDeleteList = (bottomRange, topRange) => {
   return transactWriteList;
 };
 
+const getRidOfNonNumericPrimaryKey = (arr) => {
+  for (const obj of arr) {
+    if (obj.hasOwnProperty("value")) {
+      const index = arr.indexOf(obj);
+      arr.splice(index, 1);
+    }
+  }
+  return arr;
+};
+
 //This is how you're supposed declare the function for AWS Lambda to know which function to use when the API is called.
 export const handler = async (event) => {
   //the .httpmethod attribute only exists because AWS Lambda defines that attribute for the event object it passes into the handler function when it calls it.
   switch (event.httpMethod) {
     //test this method to see if it works as you expect it to.
     case "POST":
-      console.log(Date.now());
-      console.log("fetch received. Executing POST request...");
       if (event.headers["content-type"] !== "application/json") {
         return factoryHttpRes(415, "False, unsupported media type", "Ensure the headers object has the appropriate header", "Content-Type must be application/json");
       }
-      console.log("Parsing JSON to JS object...");
       const orderData = JSON.parse(event.body);
-
-      console.log("Running validation logic...");
       //validates payload data
       //To do: make sure to check if you are given a string containing just blank spaces (technically not empty but not useful)
       for (const [key, value] of Object.entries(orderData)) {
@@ -102,7 +92,7 @@ export const handler = async (event) => {
       let countOrderCart;
       let countOrderArchive;
       let totalOrderInOrderDB;
-      
+
       try {
         //construct param to be used as a way of retrieving values from multiple tables in one atomic operation
         const GetParam = {
@@ -164,20 +154,12 @@ export const handler = async (event) => {
         countOrderCart = responseGet.Responses[indices.cartCount].Item.value;
         countOrderArchive = responseGet.Responses[indices.archiveCount].Item.value;
       } catch (err) {
-        //figure out what the error is then return a relevant http response to the user. We want to end execution the second an error occurs
-        console.log("In Get, Error exception thrown:", err);
+        console.log(err);
+        return factoryHttpRes(500, "False", "Error occured at the getting count and totalOrder values from tables ", "Internal server error");
       }
 
-
       const maxNumOrders = 500;
-      if (totalOrderInOrderDB === maxNumOrders) {
-        console.log("We are going to run delete operation");
-        const bottomRangeTest = countOrder - 500; //testing purposes only so delete when done testing
-        const topRangeTest = countOrder - 451; //testing purposes only so delete when done testing
-        console.log("We are going to run delete operation. Here are the values before we execute the deletion operation");
-        console.log("totalOrders:", totalOrderInOrderDB) //expected to be called 500 items in database
-        console.log("countOrder:", countOrder) //expected to be called every interval of 50 after 500
-        console.log("Index range deleted:", bottomRangeTest, "to", topRangeTest)
+      if (totalOrderInOrderDB >= maxNumOrders) {
         try {
           const updateTotalOrderObj = {
             Update: {
@@ -193,16 +175,15 @@ export const handler = async (event) => {
           };
           const bottomRange = countOrder - 500; //bottom orderID to start deleting from
           const topRange = countOrder - 451; //top orderID as last deletion
-          let deleteList = createOrderDeleteList(bottomRange,topRange);
-          deleteList.push(updateTotalOrderObj)
+          let deleteList = createOrderDeleteList(bottomRange, topRange);
+          deleteList.push(updateTotalOrderObj);
           const writeParam = {
-            TransactItems: deleteList
+            TransactItems: deleteList,
           };
           const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
-          console.log(responseWrite)
         } catch (err) {
           console.error(err);
-          return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
+          return factoryHttpRes(500, "False", "Error occured at the auto deletion section for orderDB", "Internal server error");
         }
       }
 
@@ -301,13 +282,51 @@ export const handler = async (event) => {
         const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
       } catch (err) {
         console.error(err);
-        return factoryHttpRes(500, "False", "Look at the server log to check error", "Internal server error");
+        return factoryHttpRes(500, "False", "Error occured in putting and updating new entries section for tables", "Internal server error");
       }
+
+      /*
+      
+      const order_items = orderData.cart.map((item) => `${item.product} (${item.quantity})`).join(", ");
+      const payload = JSON.stringify({
+        order_id: `#${countOrderArchive.toString()}`,
+        order_items: order_items,
+        order_delivery: orderData.delivDate,
+        order_total: `RM ${totalPriceCalc(orderData.cart)}`,
+        order_customer: orderData.outName,
+      });
+      const responseConf = await fetch("http://localhost:8888/.netlify/functions/confirmation", {
+        method: "POST",
+        body: payload,
+      });
+       */
+
 
       return factoryHttpRes(200, "True", "Successfully added item to tables", "False");
 
     case "GET":
+      let response;
+      try {
+        scanOrderParam = {
+          TableName: "OrderDB",
+        };
+        response = await ddbDocClient.send(new ScanCommand(scanOrderParam));
+      } catch (err) {
+        console.log(err);
+        return factoryHttpRes(500, "False", "Error occured in retrieving all entries from orderDB", "Internal server error");
+      }
 
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: "True, successfully retrieved all orders from OrderDB",
+          message: "This object contains a property referencing an array with all the orders from orderDB",
+          error: "False",
+          items: getRidOfNonNumericPrimaryKey(response.Items),
+        }),
+      };
+
+    default:
+      return factoryHttpRes(500, "false", "in default case", "true");
   }
 };
-
