@@ -6,11 +6,6 @@ import { useState, useEffect } from "react";
 
 export default function SearchContainer({ initialOrders }) {
   const [item, setItem] = useState(initialOrders);
-
-  
-  useEffect(() => {
-    sessionStorage.setItem("orders", JSON.stringify(initialOrders))
-    }, []) //empty dependency array so it only runs after initial render and that's it.
     
 
   return (
