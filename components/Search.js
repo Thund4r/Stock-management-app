@@ -19,7 +19,7 @@ export default function Search () {
     }, 300);
     
     return (
-    <div>
+    <div style={{padding: "20px"}}>
         <input
         placeholder="Search..."
         defaultValue={searchParams.get('name')?.toString()}
