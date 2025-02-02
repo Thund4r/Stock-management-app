@@ -1,7 +1,7 @@
 export const getStaticProps = async () => {
     let orders;
     try {
-      let response = await fetch("http://localhost:8888/.netlify/functions/orders", {
+      let response = await fetch("../../../.netlify/functions/orders", {
         method: "GET",
       });
       response = await response.json();
@@ -28,5 +28,7 @@ export default function page({ orders }){
       }, []); //empty dependency array so it only runs after initial render and that's it.
 
       
-    return ()
+    return (
+      <div>hello</div>
+    )
 }

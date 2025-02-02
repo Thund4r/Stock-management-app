@@ -10,7 +10,7 @@ import { useEffect } from "react";
 export const getStaticProps = async () => {
   let orders;
   try {
-    let response = await fetch("http://localhost:8888/.netlify/functions/orders", {
+    let response = await fetch("/.netlify/functions/orders", {
       method: "GET",
     });
     response = await response.json();
