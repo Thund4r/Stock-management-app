@@ -7,7 +7,7 @@ import { TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 
 
-export default function Cart() {
+export default function page() {
     const [cart, setCart] = useState([]);
     const [date, setDate] = useState(null);
     const [customerName, setCustomerName] = useState("");

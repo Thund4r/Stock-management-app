@@ -5,7 +5,7 @@ import CustomerNav from '@components/CustomerNav'
 import ClickableCard from '@components/ClickableCard'
 import Cart from '@components/Cart'
 
-export default function Home() {
+export default function page() {
 
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState(null)
@@ -30,16 +30,8 @@ export default function Home() {
   }
 
   const testFunction = () => {
-    const payload = JSON.stringify({
-        custName: "fake",
-        cart: cart,
-        delivDate: "1/1/2003",
-        outName:"TN1",
-    });
-    const response = fetch('http://localhost:8888/.netlify/functions/orders', {
-      method: "POST",
-      headers: {'Content-Type': 'application/json'},
-      body: payload
+    const response = fetch('http://localhost:8888/.netlify/functions/revalidate', {
+      method: "GET"
     })
     console.log(response)
   }
@@ -55,7 +47,7 @@ export default function Home() {
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
         {products && <ClickableCard data={products} title="" />}
-        <button onClick={() => checkProducts()}> CLICK ME </button>
+        <button onClick={() => testFunction()}> CLICK ME </button>
       </main>
       
       <Cart cart={cart} setCart={setCart}/>

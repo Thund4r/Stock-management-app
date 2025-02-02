@@ -11,7 +11,7 @@ import { Group, Stack } from '@mantine/core';
 
 
 
-export default function search() {
+export default function page() {
     const searchParams = useSearchParams();
     const {replace} = useRouter();
     const pathname = usePathname();

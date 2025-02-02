@@ -2,7 +2,7 @@ import QtSelector from '@components/QtSelector';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
  
-export default function Page({ item }) {
+export default function page({ item }) {
   const router = useRouter();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState("1");
