@@ -13,7 +13,7 @@ const createPagesToRender = (orders) => {
 
 export const getStaticPaths = async () => {
   try {
-    let response = await fetch("${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders", {
+    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
       method: "GET",
     });
     response = await response.json();
