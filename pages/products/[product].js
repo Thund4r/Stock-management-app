@@ -75,10 +75,15 @@ export default function page({ item }) {
 }
 
 export async function getStaticPaths() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
-    method: "GET"
-});
-  const products = await response.json();
+  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`);
+  let products = [];
+
+  try {
+    const data = await response.json();
+    products = Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
   const paths = products.map(item => ({params: {product: item.Name}}));
 
   return {
