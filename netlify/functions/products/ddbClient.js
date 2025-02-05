@@ -10,6 +10,7 @@ const ddbClient = new DynamoDBClient({
     // The empty parameters in the CognitoIdentityClient constructor assume
     // a region is configured in your shared configuration file.
     client: new CognitoIdentityClient({ region: REGION }),
+    region: REGION,
     identityPoolId: IDENTITY_POOL_ID,
   }),
 });
