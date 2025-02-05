@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Grid, Col, Container } from '@mantine/core'
+import { Grid } from '@mantine/core'
 
 export default function SearchResult ({name, category, products}) {
 
