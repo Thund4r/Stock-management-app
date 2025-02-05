@@ -23,7 +23,6 @@ export const getStaticPaths = async () => {
     // response = await response.json();
     // const orders = response.items;
     let orders=[]
-    console.log(createPagesToRender(orders))
     return {
       paths: createPagesToRender(orders),
       fallback: 'blocking',
