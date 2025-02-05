@@ -3,11 +3,9 @@ import { revalidateTag } from "next/cache";
 
 const createPagesToRender = (orders) => {
 
-  return {
-    params: {
-      id: String(123),
-    },
-  };
+  return (
+    [{params: {id: String(425)}}]
+);
   // return orders.map(({ orderID }) => {
   //   return {
   //     params: {
@@ -19,11 +17,13 @@ const createPagesToRender = (orders) => {
 
 export const getStaticPaths = async () => {
   try {
-    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
-      method: "GET",
-    });
-    response = await response.json();
-    const orders = response.items;
+    // let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
+    //   method: "GET",
+    // });
+    // response = await response.json();
+    // const orders = response.items;
+    let orders=[]
+    console.log(createPagesToRender(orders))
     return {
       paths: createPagesToRender(orders),
       fallback: 'blocking',
