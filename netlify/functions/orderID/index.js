@@ -2,7 +2,7 @@
 
 import { ddbDocClient } from "../orders/ddbDocClient.js";
 import { GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { factoryHttpRes } from "utility/utils.js";
+import { factoryHttpRes } from "utility/Utils.js";
 
 export const handler = async (event) => {
   switch (event.httpMethod) {
@@ -31,6 +31,7 @@ export const handler = async (event) => {
         };
       } catch (err) {
         console.log("Error during get request in orderID API", err);
+        return factoryHttpRes(500, "False", "Error occured when getting data for a specific order", "Internal server error");
       }
   }
 };
