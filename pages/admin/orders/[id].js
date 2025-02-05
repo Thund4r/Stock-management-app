@@ -2,13 +2,19 @@ import { revalidateTag } from "next/cache";
 
 
 const createPagesToRender = (orders) => {
-  return orders.map(({ orderID }) => {
-    return {
-      params: {
-        id: String(orderID),
-      },
-    };
-  });
+
+  return {
+    params: {
+      id: String(123),
+    },
+  };
+  // return orders.map(({ orderID }) => {
+  //   return {
+  //     params: {
+  //       id: String(orderID),
+  //     },
+  //   };
+  // });
 };
 
 export const getStaticPaths = async () => {
