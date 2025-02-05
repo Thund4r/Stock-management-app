@@ -1,6 +1,6 @@
 import { TransactWriteCommand, TransactGetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
-import { factoryHttpRes } from "utility/utils.js";
+import { factoryHttpRes } from "utility/Utils.js";
 
 
 
