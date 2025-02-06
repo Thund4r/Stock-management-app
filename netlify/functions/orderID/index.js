@@ -2,7 +2,18 @@
 
 import { ddbDocClient } from "../orders/ddbDocClient.js";
 import { GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { factoryHttpRes } from "utility/Utils.js";
+
+export const factoryHttpRes = (statCode, success, message, error) => {
+  return{
+      statusCode: statCode,
+      body: JSON.stringify({
+          success: success,
+          message: message,
+          error: error
+      })
+  }
+}
+
 
 export const handler = async (event) => {
   switch (event.httpMethod) {
