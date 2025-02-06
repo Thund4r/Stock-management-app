@@ -1,5 +1,3 @@
-import { revalidateTag } from "next/cache";
-
 
 const createPagesToRender = (orders) => {
   return orders.map(({ orderID }) => {
@@ -16,6 +14,7 @@ export const getStaticPaths = async () => {
     let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
       method: "GET",
     });
+    console.log(response)
     response = await response.json();
     const orders = response.items;
     return {
