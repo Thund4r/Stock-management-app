@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Header from '@components/Header'
 import { useEffect, useState } from 'react'
 import CustomerNav from '@components/CustomerNav'
-import ClickableCard from '@components/ClickableCard'
+import { ClickableCardProduct } from '@components/ClickableCard'
 import Cart from '@components/Cart'
 
 export default function page() {
@@ -28,6 +28,12 @@ export default function page() {
       setProducts(JSON.parse(sessionStorage.getItem("products")))
     }
   }
+  const testFunction = async () => {
+    const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
+          method: "GET"
+      });
+    const data = await response.json();
+  }
 
 
   return (
@@ -40,8 +46,8 @@ export default function page() {
       <main>
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
-        {products && <ClickableCard data={products} title="" />}
-        <button> CLICK ME </button>
+        {products && <ClickableCardProduct data={products} title="" />}
+        <button onClick={()=>testFunction()}> CLICK ME </button>
       </main>
       
       <Cart cart={cart} setCart={setCart}/>
