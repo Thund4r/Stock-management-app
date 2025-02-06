@@ -1,6 +1,16 @@
 import { TransactWriteCommand, TransactGetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
-import { factoryHttpRes } from "utility/Utils.js";
+
+export const factoryHttpRes = (statCode, success, message, error) => {
+  return{
+      statusCode: statCode,
+      body: JSON.stringify({
+          success: success,
+          message: message,
+          error: error
+      })
+  }
+}
 
 
 
