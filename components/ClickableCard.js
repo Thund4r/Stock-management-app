@@ -45,7 +45,7 @@ export function ClickableCardCustomer({ data = [], title = "" }){
 
     if (data.length !== 0){
         content = data.map(item => (
-            <a href = {`/products/${item.Name}`} key = {item.Name} className={styles.custCard}> 
+            <a href = {`/admin/customers/${item.Name}`} key = {item.Name} className={styles.custCard}> 
                 <b style={{paddingRight:"18px"}}>{item.Name}</b>
                 <div>{item.Phone}</div>
             </a>

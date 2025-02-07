@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './Cart.module.css';
-import QtSelector from './QtSelector';
+import QtSelector from '@components/CustomerComponents/QtSelector';
 import { Grid } from '@mantine/core';
 export default function Cart({cart = [], setCart}) {
 

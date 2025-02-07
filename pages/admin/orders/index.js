@@ -1,7 +1,7 @@
 import styles from "./index.module.css";
-import OrderSearchContainer from "../../../components/AdminOrderComponents/SearchContainer.js";
-import BulkEditButton from "../../../components/AdminOrderComponents/BulkEditButton.js";
-import { Test } from "../../../components/AdminOrderComponents/CreateOrderButton.js";
+import OrderSearchContainer from "@components/AdminComponents/AdminOrderComponents/SearchContainer.js";
+import BulkEditButton from "@components/AdminComponents/AdminOrderComponents/BulkEditButton.js";
+import { Test } from "@components/AdminComponents/AdminOrderComponents/CreateOrderButton.js";
 import { useEffect } from "react";
 
 

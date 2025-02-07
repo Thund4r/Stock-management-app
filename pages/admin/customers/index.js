@@ -1,5 +1,5 @@
-import { Stack, Flex } from "@mantine/core";
-import NavBar from "@components/NavBar"
+import { Flex } from "@mantine/core";
+import NavBar from "@components/AdminComponents/NavBar";
 import { ClickableCardCustomer } from "@components/ClickableCard";
 import { useEffect, useState } from "react";
 

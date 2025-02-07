@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import Header from '@components/Header'
 import { useEffect, useState } from 'react'
-import CustomerNav from '@components/CustomerNav'
+import CustomerNav from '@components/CustomerComponents/CustomerNav'
 import { ClickableCardProduct } from '@components/ClickableCard'
-import Cart from '@components/Cart'
+import Cart from '@components/CustomerComponents/Cart'
 
 export default function page() {
 

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Header from '@components/Header'
 import { useEffect, useState } from "react";
-import QtSelector from "@components/QtSelector";
+import QtSelector from "@components/CustomerComponents/QtSelector";
 import styles from './checkout.module.css';
 import { TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';

@@ -3,9 +3,9 @@ import Header from '@components/Header'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import Search from '@components/Search'
-import SearchResult from '@components/SearchResult'
-import CustomerNav from '@components/CustomerNav'
-import Cart from '@components/Cart'
+import SearchResult from '@components/CustomerComponents/ProductSearchResult'
+import CustomerNav from '@components/CustomerComponents/CustomerNav'
+import Cart from '@components/CustomerComponents/Cart'
 import { useEffect, useState } from 'react'
 import { Group, Stack } from '@mantine/core';
 
