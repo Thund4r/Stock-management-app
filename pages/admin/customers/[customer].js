@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import NavBar from "@components/AdminComponents/NavBar";
 import { Flex, Stack } from '@mantine/core';
+import { ClickableCardOrder } from '@components/ClickableCard';
 
-export default function page({ item }) {
+export default function page({ customerTest, orders }) {
   const [customer, setCustomer] = useState(null);
   const [quantity, setQuantity] = useState("1");
   const [cart, setCart] = useState([]);
@@ -12,7 +13,7 @@ export default function page({ item }) {
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || [])
     try {
-    setCustomer(item);
+    setCustomer(customerTest);
     } catch (error) {
     console.error("Error parsing customer:", error);
     }
@@ -20,6 +21,8 @@ export default function page({ item }) {
 
 
   if (customer){
+    console.log(orders);
+
     content = (<>
     <Stack>
         {customer.Name}
@@ -29,9 +32,7 @@ export default function page({ item }) {
 
         <div>
             Last orders
-            <div>
-                Orders go here
-            </div>
+            <ClickableCardOrder data={orders}/>
         </div>
     </Stack>
     <Stack>
@@ -95,14 +96,14 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${params.customer}`, {
-    method: "GET"
-});
-  const item = (await response.json())[0];
-
+  const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${params.customer}`);
+  const customerTest = (await customerFetch.json())[0];
+  const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${params.customer}`);
+  const orders = (await ordersFetch.json()).items;
   return {
     props: {
-      item,
+      customerTest,
+      orders,
     },
   };
 }

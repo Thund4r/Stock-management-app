@@ -75,3 +75,41 @@ export function ClickableCardCustomer({ data = [], title = "" }){
         </div>
     );
 }
+
+export function ClickableCardOrder({ data = [], title = "" }){
+    let content;
+
+    if (data.length !== 0){
+        content = data.map(item => (
+            <a href = {`/admin/orders/${item.Name}`} key = {item.Name} className={styles.ordCard}> 
+                <b style={{paddingRight:"18px"}}>{item.orderID}</b>
+                <div>{item.customerName}</div>
+                <div>{item.totalPrice}</div>
+                <div>Order date here</div>
+            </a>
+        ));
+    }
+    else{
+        content = (
+        <p>
+            
+        </p>);
+    }
+    if (title !== ""){
+        content = (
+            <>
+                <p>
+                    {title}
+                </p>
+                {content}
+            </>
+        );
+    }
+    
+
+    return(
+        <div className = {styles.cardBase}>
+            {content}
+        </div>
+    );
+}
