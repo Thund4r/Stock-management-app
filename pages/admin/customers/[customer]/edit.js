@@ -1,62 +1,85 @@
 import { useEffect, useState } from 'react';
 import NavBar from "@components/AdminComponents/NavBar";
-import { Flex, Stack } from '@mantine/core';
-import { ClickableCardOrder } from '@components/ClickableCard';
+import { Flex, TextInput, Textarea } from '@mantine/core';
 
-export default function page({ customerTest, orders }) {
+export default function page({ customerProp, orders }) {
   const [customer, setCustomer] = useState(null);
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
 
   let content = <></>
 
   useEffect(() => {
-
     try {
-    setCustomer(customerTest);
+    setCustomer(customerProp);
     } catch (error) {
     console.error("Error parsing customer:", error);
     }
   }, []);
 
+  useEffect(() => {
+    if (customer){
+        setCustomerName(customer.Name);
+        setCustomerPhone(customer.Phone);
+        setCustomerAddress(customer.Address);
+    };
+  }, [customer]);
+
+  const submitForm = async (event) => {
+    event.preventDefault();
+
+    // const payload = JSON.stringify({
+    //   custName: customerName,
+    //   cart: cart,
+    //   delivDate: date.toLocaleDateString("en-GB"),
+    //   outName: outletName,
+    // })
+    
+    // const response = fetch('${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders', {
+    //   method: "POST",
+    //   headers: {'Content-Type': 'application/json'},
+    //   body: payload
+    // })
+    console.log("Submit");
+
+  }
 
   if (customer){
     console.log(orders);
 
     content = (<>
-    <Stack>
-        {customer.Name}
-        <div>
-            Some Order Details here
-        </div>
+    <form onSubmit={submitForm}>
 
-        <div>
-            Last orders
-            <ClickableCardOrder data={orders}/>
-        </div>
-    </Stack>
-    <Stack>
-        <Flex>
-            <div>
-                Customer info
-            </div>
-            <div>
-                Edit button goes here
-            </div>
-        </Flex>
-        <div>
-            Phone
-        </div>
-        <div>
-            {customer.Phone}
-        </div>
-        <div>
-            Address
-        </div>
-        <div>
-            {customer.Address}
-        </div>
+            <h4>Customer</h4>
+            <TextInput 
+                id="custName"
+                label="Name"
+                required
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+            />
 
+            <TextInput 
+                id="custPhone"
+                label="Phone"
+                required
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+            />
 
-    </Stack>
+            <Textarea 
+                id="custAddress"
+                label="Address"
+                required
+                autosize
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
+                style={{ width: '600px' }}
+            />
+    
+        <button>Save</button>
+    </form>
     </>
     );
   };
@@ -95,12 +118,12 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${params.customer}`);
-  const customerTest = (await customerFetch.json())[0];
+  const  customerProp = (await customerFetch.json())[0];
   const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${params.customer}`);
   const orders = (await ordersFetch.json()).items;
   return {
     props: {
-      customerTest,
+       customerProp,
       orders,
     },
   };
