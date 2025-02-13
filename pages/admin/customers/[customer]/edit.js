@@ -5,13 +5,11 @@ import { ClickableCardOrder } from '@components/ClickableCard';
 
 export default function page({ customerTest, orders }) {
   const [customer, setCustomer] = useState(null);
-  const [quantity, setQuantity] = useState("1");
-  const [cart, setCart] = useState([]);
 
   let content = <></>
 
   useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem("cart")) || [])
+
     try {
     setCustomer(customerTest);
     } catch (error) {
@@ -91,7 +89,7 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   }
 }
 

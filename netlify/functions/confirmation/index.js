@@ -1,8 +1,11 @@
 require("dotenv").config();
 
 export const handler = async (event) => {
-    const recipientNumber = 60102222965
     const payload = JSON.parse(event.body);
+    const custResponse = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${payload.order_customer}`)
+    const custInformation = custResponse.json()[0];
+    const recipientNumber = custInformation.Phone;
+    
     
     // try{
     //     const response = await fetch(`https://graph.facebook.com/v21.0/${process.env.WA_BUSINESS_ACCOUNT_ID}/message_templates?fields=name,status,components`, {
