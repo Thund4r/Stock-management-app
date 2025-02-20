@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import NavBar from "@components/AdminComponents/NavBar";
 import { Flex, TextInput, Textarea } from '@mantine/core';
+import { useRouter } from 'next/router';
 
 export default function page({ customerProp, orders }) {
+  const router = useRouter();
   const [customer, setCustomer] = useState(null);
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -29,19 +31,22 @@ export default function page({ customerProp, orders }) {
   const submitForm = async (event) => {
     event.preventDefault();
 
-    // const payload = JSON.stringify({
-    //   custName: customerName,
-    //   cart: cart,
-    //   delivDate: date.toLocaleDateString("en-GB"),
-    //   outName: outletName,
-    // })
+    const payload = JSON.stringify([{
+      oldName: "CK Kitchen2",
+      newName: "CK Kitchen",
+      phone: "+6010232123",
+      orders: [3, 4, 6, 17, 20],
+      address: "Somewhere, Someplace, Some country",
+    }])
     
-    // const response = fetch('${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders', {
-    //   method: "POST",
-    //   headers: {'Content-Type': 'application/json'},
-    //   body: payload
-    // })
-    console.log("Submit");
+    const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
+      method: "PUT",
+      headers: {'Content-Type': 'application/json'},
+      body: payload
+    })
+
+    sessionStorage.removeItem("customers");
+    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`)
 
   }
 
@@ -83,10 +88,6 @@ export default function page({ customerProp, orders }) {
     </>
     );
   };
-
-  const checkMonthlySpending = () => {
-    //TODO
-  }
 
 
   return(

@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import NavBar from "@components/AdminComponents/NavBar";
 import { Flex, Stack } from '@mantine/core';
 import { ClickableCardOrder } from '@components/ClickableCard';
+import { usePathname } from 'next/navigation'
 
 export default function page({ customerTest, orders }) {
   const [customer, setCustomer] = useState(null);
+  const pathName = usePathname();
 
   let content = <></>
 
@@ -12,6 +14,7 @@ export default function page({ customerTest, orders }) {
 
     try {
     setCustomer(customerTest);
+    console.log(pathName);
     } catch (error) {
     console.error("Error parsing customer:", error);
     }
@@ -38,9 +41,9 @@ export default function page({ customerTest, orders }) {
             <div>
                 Customer info
             </div>
-            <div>
-                Edit button goes here
-            </div>
+            <a href={`${pathName}/edit`}>
+                <button>Edit</button>
+            </a>
         </Flex>
         <div>
             Phone
