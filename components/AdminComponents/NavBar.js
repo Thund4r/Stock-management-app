@@ -1,8 +1,7 @@
 import { NavLink } from "@mantine/core";
-import style from "./NavBar.module.css"
 
 export default function NavBar() {
-    return(<div className = {style.navBar}>
+    return(<div>
     <NavLink label="Dashboard" href=""/>
     <NavLink label="Orders">
         <NavLink label="All" href=""/>

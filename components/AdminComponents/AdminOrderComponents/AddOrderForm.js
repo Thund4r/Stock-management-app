@@ -17,7 +17,7 @@ export default function AddOrderForm() {
         <label for="outletName">Outlet Name</label>
         <input type="string" name="outletName" id="outletName"></input>
       </div>
-        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+        {/* <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} /> */}
     </form>
   );
 }

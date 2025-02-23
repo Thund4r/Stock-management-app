@@ -1,7 +1,7 @@
 import styles from "./index.module.css";
 import OrderSearchContainer from "@components/AdminComponents/AdminOrderComponents/SearchContainer";
 import BulkEditButton from "@components/AdminComponents/AdminOrderComponents/BulkEditButton";
-import { Test } from "@components/AdminComponents/AdminOrderComponents/AddOrderForm";
+// import { Test } from "@components/AdminComponents/AdminOrderComponents/AddOrderForm";
 import { useEffect } from "react";
 
 export const getServerSideProps = async () => {
@@ -35,7 +35,7 @@ export default function page({ orders }) {
         <h3>Orders</h3>
         <div className={styles.actionButtonContainer}>
           <BulkEditButton> bulk edit </BulkEditButton>
-          <Test> Post </Test>
+          {/* <Test> Post </Test> */}
         </div>
       </div>
 
