@@ -1,0 +1,13 @@
+.parent{
+    display: flex;
+    border: solid black 1px;
+
+}
+
+.childOne{
+    border: solid green 1px;
+}
+
+.childTwo{
+    border: solid red 1px;
+}
