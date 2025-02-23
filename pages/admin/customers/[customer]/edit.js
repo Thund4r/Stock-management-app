@@ -32,21 +32,21 @@ export default function page({ customerProp, orders }) {
     event.preventDefault();
 
     const payload = JSON.stringify([{
-      oldName: "CK Kitchen2",
-      newName: "CK Kitchen",
-      phone: "+6010232123",
-      orders: [3, 4, 6, 17, 20],
-      address: "Somewhere, Someplace, Some country",
-    }])
+      oldName: customer.Name,
+      newName: customerName,
+      phone: customerPhone,
+      orders: customer.Orders,
+      address: customerAddress,
+    }]);
     
     const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
       method: "PUT",
       headers: {'Content-Type': 'application/json'},
       body: payload
-    })
+    });
 
     sessionStorage.removeItem("customers");
-    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`)
+    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
 
   }
 
@@ -113,7 +113,7 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: true,
+    fallback: "blocking",
   }
 }
 
