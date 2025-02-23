@@ -1,8 +1,16 @@
 import { TransactWriteCommand, TransactGetCommand, ScanCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
-import { factoryHttpRes } from "utility/Utils.js";
 
-
+export const factoryHttpRes = (statCode, success, message, error) => {
+  return{
+      statusCode: statCode,
+      body: JSON.stringify({
+          success: success,
+          message: message,
+          error: error
+      })
+  }
+}
 
 //conforms to REST Convention but netlify doesn't support fully support REST APIs.
 

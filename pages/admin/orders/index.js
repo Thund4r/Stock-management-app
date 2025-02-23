@@ -5,12 +5,10 @@ import { Test } from "@components/AdminComponents/AdminOrderComponents/CreateOrd
 import { useEffect } from "react";
 
 
-//set revalidate to 60s
-//set an api call to res validate when the database (and any of its entries) change.
 export const getStaticProps = async () => {
   let orders;
   try {
-    let response = await fetch("/.netlify/functions/orders", {
+    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
       method: "GET",
     });
     response = await response.json();
@@ -24,7 +22,6 @@ export const getStaticProps = async () => {
     props: {
       orders: orders,
     },
-    revalidate: 60,
   };
 };
 
