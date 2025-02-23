@@ -1,11 +1,10 @@
 import styles from "./index.module.css";
-import OrderSearchContainer from "@components/AdminComponents/AdminOrderComponents/SearchContainer.js";
-import BulkEditButton from "@components/AdminComponents/AdminOrderComponents/BulkEditButton.js";
-import { Test } from "@components/AdminComponents/AdminOrderComponents/CreateOrderButton.js";
+import OrderSearchContainer from "@components/AdminComponents/AdminOrderComponents/SearchContainer";
+import BulkEditButton from "@components/AdminComponents/AdminOrderComponents/BulkEditButton";
+import { Test } from "@components/AdminComponents/AdminOrderComponents/AddOrderForm";
 import { useEffect } from "react";
 
-
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
   let orders;
   try {
     let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
@@ -25,7 +24,6 @@ export const getStaticProps = async () => {
   };
 };
 
-
 export default function page({ orders }) {
   useEffect(() => {
     sessionStorage.setItem("orders", JSON.stringify(orders));
@@ -36,8 +34,8 @@ export default function page({ orders }) {
       <div className={styles.actionToolbar}>
         <h3>Orders</h3>
         <div className={styles.actionButtonContainer}>
-          <BulkEditButton />
-          <Test />
+          <BulkEditButton> bulk edit </BulkEditButton>
+          <Test> Post </Test>
         </div>
       </div>
 

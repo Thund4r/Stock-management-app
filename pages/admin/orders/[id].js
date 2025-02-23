@@ -1,7 +1,7 @@
 
 const createPagesToRender = (orders) => {
   return orders.map(({ orderID }) => {
-    return {
+    return { 
       params: {
         id: String(orderID),
       },
@@ -41,11 +41,9 @@ export const getStaticProps = async ({ params }) => {
         customerName: String(response.items.customerName),
         delivDate:  String(response.items.deliveryDate),
         totalPrice:   String(response.items.totalPrice),
-        outletName:   String(response.items.outletName),
         delivStatus:  String(response.items.deliveryStatus),
         orderID:  String(response.items.orderID)
       },
-      revalidate: 60,
     };
   }catch(err){
     console.log("Error occured in orderID Api", err)

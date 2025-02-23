@@ -1,0 +1,6 @@
+.form{
+    display:flex;
+    border: solid red 1px;
+    flex-direction: column;
+    justify-content: center;
+}

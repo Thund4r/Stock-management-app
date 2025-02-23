@@ -2,15 +2,15 @@ import { TransactWriteCommand, TransactGetCommand, ScanCommand, QueryCommand } f
 import { ddbDocClient } from "./ddbDocClient.js";
 
 export const factoryHttpRes = (statCode, success, message, error) => {
-  return{
-      statusCode: statCode,
-      body: JSON.stringify({
-          success: success,
-          message: message,
-          error: error
-      })
-  }
-}
+  return {
+    statusCode: statCode,
+    body: JSON.stringify({
+      success: success,
+      message: message,
+      error: error,
+    }),
+  };
+};
 
 //conforms to REST Convention but netlify doesn't support fully support REST APIs.
 
@@ -41,13 +41,22 @@ const createOrderDeleteList = (bottomRange, topRange) => {
 };
 
 const getRidOfNonNumericPrimaryKey = (arr) => {
+  let indicesToRemove = [];
   for (const obj of arr) {
     if (obj.hasOwnProperty("value")) {
       const index = arr.indexOf(obj);
-      arr.splice(index, 1);
+      indicesToRemove.push(index);
     }
   }
-  return arr;
+
+  const filteredArr = arr.filter((_, index) => {
+    return !indicesToRemove.includes(index);
+  });
+
+  //find the indexes of the objects we want to get rid of
+  //Use filter to get rid of them, and return the new arr that only contains the appropriate objects
+  // return arr;
+  return filteredArr;
 };
 
 //This is how you're supposed declare the function for AWS Lambda to know which function to use when the API is called.
@@ -166,6 +175,7 @@ export const handler = async (event) => {
         return factoryHttpRes(500, "False", "Error occured at the getting count and totalOrder values from tables ", "Internal server error");
       }
 
+      //handles deleting oldest 50 entries when orderDB hits the allowed maximum number of orders
       const maxNumOrders = 500;
       if (totalOrderInOrderDB >= maxNumOrders) {
         try {
@@ -195,6 +205,17 @@ export const handler = async (event) => {
         }
       }
 
+      const dateOfCreation = new Intl.DateTimeFormat("en-MY", {
+        timeZone: "Asia/Kuala_Lumpur",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date());
+
+
+      //update these puts to include the new attributes. Also, have to figure out which DB the  new attributes are going to go into.
       try {
         //construct param to be used as a way to write (post and update) to multiple tables in one atomic operation
         const writeParam = {
@@ -207,8 +228,8 @@ export const handler = async (event) => {
                   customerName: orderData.custName,
                   deliveryDate: orderData.delivDate,
                   deliveryStatus: "Pending", //set by default - user has to manually change
-                  outletName: orderData.outName,
                   totalPrice: totalPriceCalc(orderData.cart),
+                  dateOfCreation: dateOfCreation,
                 },
                 ConditionExpression: "attribute_not_exists(orderID)",
               },
@@ -231,8 +252,8 @@ export const handler = async (event) => {
                   customerName: orderData.custName,
                   deliveryDate: orderData.delivDate,
                   deliveryStatus: "Pending", //set by default - user has to manually change
-                  outletName: orderData.outName,
                   totalPrice: totalPriceCalc(orderData.cart),
+                  dateOfCreation: dateOfCreation,
                 },
                 ConditionExpression: "attribute_not_exists(orderID)",
               },
@@ -289,7 +310,6 @@ export const handler = async (event) => {
         };
         const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
       } catch (err) {
-        console.error(err);
         return factoryHttpRes(500, "False", "Error occured in putting and updating new entries section for tables", "Internal server error");
       }
 
@@ -333,6 +353,7 @@ export const handler = async (event) => {
         //If customerName is not provided
         const params = {
           TableName: "OrderDB",
+          ConsistentRead: true, //just added
         };
         command = new ScanCommand(params);
       }
@@ -354,7 +375,29 @@ export const handler = async (event) => {
         }),
       };
 
+    case "PUT":
+      if (event.headers["content-type"] !== "application/json") {
+        return factoryHttpRes(415, "False, unsupported media type", "Ensure the headers object has the appropriate header", "Content-Type must be application/json");
+      }
+      const updateData = JSON.parse(event.body);
+      if (updateData.length === 0) {
+        return factoryHttpRes(500, "False,", "The request body contains no attributes to update OrderDB and OrderArchiveDB with.", "Internal server error");
+      }
+      try {
+        const writeParam = {
+          TransactItems: updateData,
+        };
+        const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
+        console.log("responseWrite:", responseWrite);
+        return factoryHttpRes(200, "True", "Successfully modified attributes in dynamoDB", "False");
+      } catch (err) {
+        console.log("here's the error:", err);
+        return factoryHttpRes(500, "False,", "Error occured when updating attributes in orderDB and orderArchiveDB", "Internal server error");
+      }
+
     default:
       return factoryHttpRes(500, "false", "in default case", "true");
   }
 };
+
+//
