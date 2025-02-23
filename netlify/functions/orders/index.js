@@ -1,4 +1,4 @@
-import { TransactWriteCommand, TransactGetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { TransactWriteCommand, TransactGetCommand, ScanCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 export const factoryHttpRes = (statCode, success, message, error) => {
@@ -11,8 +11,6 @@ export const factoryHttpRes = (statCode, success, message, error) => {
       })
   }
 }
-
-
 
 //conforms to REST Convention but netlify doesn't support fully support REST APIs.
 
@@ -305,7 +303,7 @@ export const handler = async (event) => {
         order_total: `RM ${totalPriceCalc(orderData.cart)}`,
         order_customer: orderData.outName,
       });
-      const responseConf = await fetch("${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/confirmation", {
+      const responseConf = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/confirmation`, {
         method: "POST",
         body: payload,
       });
@@ -316,11 +314,31 @@ export const handler = async (event) => {
 
     case "GET":
       let response;
-      try {
-        scanOrderParam = {
+      const query = new URLSearchParams(event.rawQuery);
+      let customerName = query.get("customerName");
+      let command
+      console.log(customerName);
+      if (customerName && customerName !== "null"){
+        const params = {
+          TableName: "OrderDB",
+          IndexName: "customerName-orderID-index",
+          KeyConditionExpression: "customerName = :n",
+          ExpressionAttributeValues: {
+              ":n": customerName,
+          },
+        };
+        command = new QueryCommand(params);
+      }
+      else{
+        //If customerName is not provided
+        const params = {
           TableName: "OrderDB",
         };
-        response = await ddbDocClient.send(new ScanCommand(scanOrderParam));
+        command = new ScanCommand(params);
+      }
+      try {
+        response = await ddbDocClient.send(command);
+        console.log(response);
       } catch (err) {
         console.log(err);
         return factoryHttpRes(500, "False", "Error occured in retrieving all entries from orderDB", "Internal server error");

@@ -14,7 +14,6 @@ export const factoryHttpRes = (statCode, success, message, error) => {
   }
 }
 
-
 export const handler = async (event) => {
   switch (event.httpMethod) {
     case "GET":

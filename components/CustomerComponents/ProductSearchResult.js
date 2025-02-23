@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Grid } from '@mantine/core'
 
-export default function SearchResult ({name, category, products}) {
+export default function ProductSearchResult ({name, category, products}) {
 
     const [content, setContent] = useState(<></>);
 

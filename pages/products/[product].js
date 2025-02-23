@@ -1,4 +1,4 @@
-import QtSelector from '@components/QtSelector';
+import QtSelector from '@components/CustomerComponents/QtSelector';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
  
@@ -12,14 +12,12 @@ export default function page({ item }) {
 
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || [])
-    if (router.query.product) {
-      try {
-        setProduct(item);
-      } catch (error) {
-        console.error("Error parsing product:", error);
-      }
+    try {
+      setProduct(item);
+    } catch (error) {
+      console.error("Error parsing product:", error);
     }
-  }, [router.query.product]);
+  }, []);
 
 
   if (product){
