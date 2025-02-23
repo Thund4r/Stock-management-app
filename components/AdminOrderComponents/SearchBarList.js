@@ -29,6 +29,7 @@ const parseProductsJson = (item) => {
           <span>
             <span>{item.deliveryDate}</span>
             <span>{item.deliveryStatus}</span>
+            <span>{item.dateOfCreation}</span>
           </span>
         </Link>
       </div>
