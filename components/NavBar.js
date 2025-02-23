@@ -1,10 +1,12 @@
 import { NavLink } from "@mantine/core";
-export default function NarBar() {
-    return(<div style={{ width: "21%", position: "sticky", top: 0,}}>
+import style from "./NavBar.module.css"
+
+export default function NavBar() {
+    return(<div className = {style.navBar}>
     <NavLink label="Dashboard" href=""/>
     <NavLink label="Orders">
         <NavLink label="All" href=""/>
-        <NavLink label="Summary (Monthly spending here maybe)" href=""/>
+        <NavLink label="Summary" href=""/>
     </NavLink>
     <NavLink label="Products">
         <NavLink label="All" href=""/>
