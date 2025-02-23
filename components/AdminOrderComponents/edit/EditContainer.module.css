@@ -1,0 +1,15 @@
+.editContainer{
+    display: flex;
+    flex-direction:column;
+    border: solid blue 1px;
+
+}
+
+/* This is what's going to mimic the layout of my excel table */
+.tableContainer{
+    overflow-y: scroll;
+    margin-bottom:  1%;
+    background-color: white;
+}
+
+
