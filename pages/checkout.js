@@ -3,7 +3,7 @@ import Header from '@components/Header'
 import { useEffect, useState } from "react";
 import QtSelector from "@components/CustomerComponents/QtSelector";
 import styles from './checkout.module.css';
-import { TextInput } from '@mantine/core';
+import { Select, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useRouter } from 'next/router';
 
@@ -13,10 +13,17 @@ export default function page() {
   const [cart, setCart] = useState([]);
   const [date, setDate] = useState(null);
   const [customerName, setCustomerName] = useState("");
+  const [customerNames, setCustomerNames] = useState([]);
   const [outletName, setOutletName] = useState("");
 
+  const getCustomerNames = async () => {
+    const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?nameOnly=True`);
+    setCustomerNames(await customerFetch.json());
+  }
+
   useEffect(() => {
-      setCart(JSON.parse(localStorage.getItem("cart")) || [])
+      setCart(JSON.parse(localStorage.getItem("cart")) || []);
+      getCustomerNames();
     }, []);
 
   const updateQuant = (item, newQuantity) => {
@@ -74,11 +81,13 @@ export default function page() {
           <form onSubmit={submitForm}>
           <div className={styles.formComponent}>
           <h4>Customer</h4>
-          <TextInput 
-            id="cusName"
-            label="Name"
+          
+          <Select
+            label = "Name"
+            placeholder= "Outlet name here..."
             required
-            onChange={(e) => setCustomerName(e.target.value)}
+            data = {customerNames.map(c => c.Name)}
+            onChange={setCustomerName}
           />
           </div>
 

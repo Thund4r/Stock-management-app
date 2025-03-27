@@ -24,8 +24,8 @@ export const handler = async (event) => {
             query = new URLSearchParams(event.rawQuery);
             name = query.get("name");
             phone = query.get("phone");
+            nameOnly = query.get("nameOnly")
             if (name && name !== "null") {
-                console.log("Name provided")
                 // When name is provided
                 params = {
                     TableName: "CustomerDB",
@@ -39,6 +39,16 @@ export const handler = async (event) => {
                 };
                 command = new QueryCommand(params);
             } 
+            else if (nameOnly && nameOnly == "True"){
+                params = {
+                    TableName: "CustomerDB",
+                    ProjectionExpression: "#name",
+                    ExpressionAttributeNames: {
+                        "#name": "Name", 
+                    },
+                };
+                command = new ScanCommand(params);
+            }
             else {
                 // When name is not provided
                 params = {

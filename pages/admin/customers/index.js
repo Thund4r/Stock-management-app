@@ -18,10 +18,10 @@ export default function page(){
             });
             const customer = await response.json();
             sessionStorage.setItem("customers", JSON.stringify(customer));
-            setCustomers(customer)
+            setCustomers(customer);
         }
         else{
-            setCustomers(JSON.parse(sessionStorage.getItem("customers")))
+            setCustomers(JSON.parse(sessionStorage.getItem("customers")));
         }
         
     }
