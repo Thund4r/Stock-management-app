@@ -10,7 +10,7 @@ export default function NarBar() {
         <NavLink label="All" href=""/>
         <NavLink label="Category" href=""/>
     </NavLink>
-    <NavLink label="Customers" href=""/>
+    <NavLink label="Customers" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`}/>
     <NavLink label="Settings" href=""/>
     </div>)
 }

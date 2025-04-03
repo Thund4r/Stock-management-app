@@ -25,11 +25,13 @@ export default function page(){
         }
         
     }
+
     return(
         <Flex>
             <NavBar/>
             <Flex flex={1}>
                 {customers && <ClickableCardCustomer data={customers}/>}
+                <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers/new`}><button>Add new customer</button></a>
             </Flex>
         </Flex>
     )
