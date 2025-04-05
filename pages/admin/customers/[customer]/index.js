@@ -21,6 +21,17 @@ export default function page({ customerTest, orders }) {
   }, []);
 
 
+  const deleteCustomer = async () => {
+    const payload = {};
+    
+    const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
+          method: "DELETE",
+          headers: {'Content-Type': 'application/json'},
+          body: payload
+        });
+  }
+
+
   if (customer){
     console.log(orders);
 

@@ -7,14 +7,31 @@ import { useRouter } from "next/router";
 
 export default function page(){
 
+    const [customerNames, setCustomerNames] = useState("");
     const [customerPhone, setCustomerPhone] = useState("");
     const [customerName, setCustomerName] = useState("");
     const [customerAddress, setCustomerAddress] = useState("");
     const router = useRouter();
       
+    useEffect(() => {
+        getCustomerNames();
+    }, []);
+    
+    const getCustomerNames = async () => {
+        const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?nameOnly=True`);
+        setCustomerNames(await customerFetch.json());
+    }
+
     const submitForm = async (event) => {
         event.preventDefault();
-    
+
+        const normalisedNames = customerNames.map(customer => customer.Name.trim().toLowerCase());
+        
+        if (normalisedNames.includes(customerName.trim().toLowerCase())){
+            alert("A customer with this name already exists.");
+            return;
+        }
+
         const payload = JSON.stringify({
           name: customerName,
           phone: customerPhone,
