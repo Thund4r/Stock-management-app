@@ -24,18 +24,20 @@ export default function page({ customerTest, orders }) {
 
 
   const deleteCustomer = async () => {
-    const payload = JSON.stringify({
-      name: customer.Name
-    });
-
-    const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
-        method: "DELETE",
-        headers: {'Content-Type': 'application/json'},
-        body: payload
+    if (confirm('Delete this customer?')) {
+      const payload = JSON.stringify({
+        name: customer.Name
       });
-
-    sessionStorage.removeItem("customers");
-    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
+  
+      const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
+          method: "DELETE",
+          headers: {'Content-Type': 'application/json'},
+          body: payload
+        });
+  
+      sessionStorage.removeItem("customers");
+      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
+    };
   }
 
 
