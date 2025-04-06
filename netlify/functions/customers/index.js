@@ -193,6 +193,33 @@ export const handler = async (event) => {
                 }
                 
             }
+
+        case "DELETE":
+            customer = JSON.parse(event.body);
+            console.log(customer);
+            params = {
+                TableName: "CustomerDB",
+                Key: { Name: customer.name }
+            };
+            try {
+                console.log("Updating customers...");
+                console.log(params)
+                const data = await ddbDocClient.send(new DeleteCommand(params));
+                console.log("Updated customers:", data);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(data)
+                }
+
+            } 
+            catch (err) {
+                console.error(err);
+                return {
+                statusCode: 500,
+                body: JSON.stringify(err)
+                }
+                
+            }
         
         default:
             console.log(event);
