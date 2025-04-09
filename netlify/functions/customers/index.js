@@ -1,4 +1,4 @@
-import { DeleteCommand, QueryCommand, ScanCommand, TransactWriteCommand} from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, PutCommand, QueryCommand, ScanCommand, TransactWriteCommand} from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
@@ -14,18 +14,44 @@ export const handler = async (event) => {
 
     switch (event.httpMethod){
         case "POST":
-            return{
-                statusCode: 400,
-                body: "Not yet implemented"
+            customer = JSON.parse(event.body);
+
+            console.log(customer);
+            params = {
+                TableName: "CustomerDB",
+                Item: {
+                    Name: customer.name,
+                    Address: customer.address,
+                    Orders: [],
+                    Phone: customer.phone,
+                },
             }
+
+            try{
+                const data = await ddbDocClient.send(new PutCommand(params));
+                return{
+                    statusCode: 200,
+                    body: JSON.stringify(data)
+                }
+            }
+            catch (err) {
+                console.error(err);
+                
+                return {
+                statusCode: 500,
+                body: JSON.stringify(err)
+                }
+                
+            }
+            
             //CHANGE TO PUT ITEM IN DB LATER
         
         case "GET":
             query = new URLSearchParams(event.rawQuery);
             name = query.get("name");
             phone = query.get("phone");
+            nameOnly = query.get("nameOnly");
             if (name && name !== "null") {
-                console.log("Name provided")
                 // When name is provided
                 params = {
                     TableName: "CustomerDB",
@@ -39,6 +65,16 @@ export const handler = async (event) => {
                 };
                 command = new QueryCommand(params);
             } 
+            else if (nameOnly && nameOnly == "True"){
+                params = {
+                    TableName: "CustomerDB",
+                    ProjectionExpression: "#name",
+                    ExpressionAttributeNames: {
+                        "#name": "Name", 
+                    },
+                };
+                command = new ScanCommand(params);
+            }
             else {
                 // When name is not provided
                 params = {
@@ -151,6 +187,33 @@ export const handler = async (event) => {
             catch (err) {
                 console.error(err);
                 
+                return {
+                statusCode: 500,
+                body: JSON.stringify(err)
+                }
+                
+            }
+
+        case "DELETE":
+            customer = JSON.parse(event.body);
+            console.log(customer);
+            params = {
+                TableName: "CustomerDB",
+                Key: { Name: customer.name }
+            };
+            try {
+                console.log("Updating customers...");
+                console.log(params)
+                const data = await ddbDocClient.send(new DeleteCommand(params));
+                console.log("Updated customers:", data);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(data)
+                }
+
+            } 
+            catch (err) {
+                console.error(err);
                 return {
                 statusCode: 500,
                 body: JSON.stringify(err)

@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import NavBar from "@components/AdminComponents/NavBar";
 import { Flex, Stack } from '@mantine/core';
 import { ClickableCardOrder } from '@components/ClickableCard';
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export default function page({ customerTest, orders }) {
   const [customer, setCustomer] = useState(null);
   const pathName = usePathname();
+  const router = useRouter();
 
   let content = <></>
 
@@ -19,6 +21,24 @@ export default function page({ customerTest, orders }) {
     console.error("Error parsing customer:", error);
     }
   }, []);
+
+
+  const deleteCustomer = async () => {
+    if (confirm('Delete this customer?')) {
+      const payload = JSON.stringify({
+        name: customer.Name
+      });
+  
+      const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
+          method: "DELETE",
+          headers: {'Content-Type': 'application/json'},
+          body: payload
+        });
+  
+      sessionStorage.removeItem("customers");
+      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
+    };
+  }
 
 
   if (customer){
@@ -37,6 +57,7 @@ export default function page({ customerTest, orders }) {
         </div>
     </Stack>
     <Stack>
+        <button onClick={deleteCustomer}>Delete</button>
         <Flex>
             <div>
                 Customer info

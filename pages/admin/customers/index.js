@@ -18,18 +18,20 @@ export default function page(){
             });
             const customer = await response.json();
             sessionStorage.setItem("customers", JSON.stringify(customer));
-            setCustomers(customer)
+            setCustomers(customer);
         }
         else{
-            setCustomers(JSON.parse(sessionStorage.getItem("customers")))
+            setCustomers(JSON.parse(sessionStorage.getItem("customers")));
         }
         
     }
+
     return(
         <Flex>
             <NavBar/>
             <Flex flex={1}>
                 {customers && <ClickableCardCustomer data={customers}/>}
+                <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers/new`}><button>Add new customer</button></a>
             </Flex>
         </Flex>
     )

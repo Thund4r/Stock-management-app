@@ -51,8 +51,6 @@ export default function page({ customerProp, orders }) {
   }
 
   if (customer){
-    console.log(orders);
-
     content = (<>
     <form onSubmit={submitForm}>
 
