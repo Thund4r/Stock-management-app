@@ -28,13 +28,6 @@ export default function page() {
       setProducts(JSON.parse(sessionStorage.getItem("products")))
     }
   }
-  const testFunction = async () => {
-    const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
-          method: "GET"
-      });
-    const data = await response.json();
-  }
-
 
   return (
     <div className="container">

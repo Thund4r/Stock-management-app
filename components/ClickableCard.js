@@ -70,7 +70,7 @@ export function ClickableCardCustomer({ data = [], title = "" }){
     
 
     return(
-        <div className = {styles.cardBase}>
+        <div style={{flex: 1}}>
             {content}
         </div>
     );

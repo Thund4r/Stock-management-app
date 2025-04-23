@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import { Box, Flex, Stack } from "@mantine/core";
 import NavBar from "@components/AdminComponents/NavBar";
 import { ClickableCardCustomer } from "@components/ClickableCard";
 import { useEffect, useState } from "react";
@@ -25,13 +25,19 @@ export default function page(){
         }
         
     }
-
     return(
         <Flex>
+
             <NavBar/>
-            <Flex flex={1}>
-                {customers && <ClickableCardCustomer data={customers}/>}
-                <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers/new`}><button>Add new customer</button></a>
+            <Flex justify="flex-start" align="center" style={{ flex: 1 }}>
+                <Stack w="60%" align="flex-end">
+                    <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers/new`}><button>Add new customer</button></a>
+                    {customers && (
+                        <Box w="100%">
+                        <ClickableCardCustomer data={customers} />
+                        </Box>
+                    )}
+                </Stack>
             </Flex>
         </Flex>
     )

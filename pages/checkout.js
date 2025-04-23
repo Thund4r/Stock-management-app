@@ -14,7 +14,6 @@ export default function page() {
   const [date, setDate] = useState(null);
   const [customerName, setCustomerName] = useState("");
   const [customerNames, setCustomerNames] = useState([]);
-  const [outletName, setOutletName] = useState("");
 
   const getCustomerNames = async () => {
     const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?nameOnly=True`);
@@ -54,7 +53,6 @@ export default function page() {
       custName: customerName,
       cart: cart,
       delivDate: date.toLocaleDateString("en-GB"),
-      outName: outletName,
     })
     
     const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
@@ -114,15 +112,6 @@ export default function page() {
             required
             label="Select your delivery/pickup date"
             />
-          </div>
-
-          <div className={styles.formComponent}>
-            <TextInput 
-            id="outName"
-            label="Insert Your Outlet Name (CJ1, CJ2, 10Thai, 10PotsCJ, ICM, PJ1, 10PotsPJ)"
-            required
-            onChange={(e) => setOutletName(e.target.value)}
-          />
           </div>
 
           <div className={styles.formComponent}> 
