@@ -1,4 +1,4 @@
-import { DeleteCommand, PutCommand, QueryCommand, ScanCommand, TransactWriteCommand} from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, QueryCommand, UpdateCommand} from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
@@ -46,110 +46,64 @@ export const handler = async (event) => {
             
         //     //CHANGE TO PUT ITEM IN DB LATER
         
-        // case "GET":
-        //     query = new URLSearchParams(event.rawQuery);
-        //     name = query.get("name");
-        //     phone = query.get("phone");
-        //     nameOnly = query.get("nameOnly");
-        //     if (name && name !== "null") {
-        //         // When name is provided
-        //         params = {
-        //             TableName: "CustomerDB",
-        //             KeyConditionExpression: "#name = :n",
-        //             ExpressionAttributeValues: {
-        //                 ":n": name,
-        //             },
-        //             ExpressionAttributeNames: {
-        //                 "#name": "Name", 
-        //             },
-        //         };
-        //         command = new QueryCommand(params);
-        //     } 
-        //     else if (nameOnly && nameOnly == "True"){
-        //         params = {
-        //             TableName: "CustomerDB",
-        //             ProjectionExpression: "#name",
-        //             ExpressionAttributeNames: {
-        //                 "#name": "Name", 
-        //             },
-        //         };
-        //         command = new ScanCommand(params);
-        //     }
-        //     else {
-        //         // When name is not provided
-        //         params = {
-        //             TableName: "CustomerDB",
-        //         };
-        //         command = new ScanCommand(params);
-        //     }
-            
-        //     try {
-        //         console.log("Getting customers...");
-        //         const data = await ddbDocClient.send(command);
-        //         console.log("Retrieved customers:", data.Items);
-                
-        //         return {
-        //             statusCode: 200,
-        //             body: JSON.stringify(data.Items)
-        //         }
+        case "GET":
+            query = new URLSearchParams(event.rawQuery);
+            storeID = query.get("storeID");
 
-        //     } 
-        //     catch (err) {
-        //         console.error(err);
+            params = {
+                TableName: "SettingsDB",
+                Key: {
+                    StoreID: storeID,
+                }
+            };
+            command = new GetCommand(params);
+            
+            
+            try {
+                console.log("Getting settings...");
+                const data = await ddbDocClient.send(command);
+                console.log("Retrieved settings:", data.Item);
                 
-        //         return {
-        //         statusCode: 500,
-        //         body: JSON.stringify(err)
-        //         }
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(data.Item)
+                }
+
+            } 
+            catch (err) {
+                console.error(err);
                 
-        //     }
+                return {
+                statusCode: 500,
+                body: JSON.stringify(err)
+                }
+                
+            }
 
         case "PUT":
             settings = JSON.parse(event.body);
-            let delParams = null;
-
             params = {
-                TransactItems: [{ 
-                    Update: {
-                        TableName: "SettingsDB",
-                        Key: { Name: customer[0].newName },
-                        UpdateExpression: "SET #phone = :p, #address = :a, #orders = :o",
-                        ExpressionAttributeValues: {
-                            ":p": customer[0].phone,
-                            ":a": customer[0].address,
-                            ":o": customer[0].orders,
-                        },
-                        ExpressionAttributeNames: {
-                            "#phone": "Phone", 
-                            "#address": "Address", 
-                            "#orders": "Orders"
-                        },
-                    }
-                }]
+                TableName: "SettingsDB",
+                Key: { 
+                    StoreID: settings.StoreID 
+                },
+                UpdateExpression: "SET #phone = :p, #address = :a, #name = :n",
+                ExpressionAttributeValues: {
+                    ":p": settings.Phone,
+                    ":a": settings.Address,
+                    ":n": settings.Name,
+                },
+                ExpressionAttributeNames: {
+                    "#phone": "Phone", 
+                    "#address": "Address", 
+                    "#name": "Name"
+                },
             }
-            if (customer[0].newName !== customer[0].oldName){
-                delParams = {
-                    TableName: "CustomerDB",
-                    Key: { Name: customer[0].oldName }
-                }
-            }
-            
-            else {
-                // When name is not provided
-                return{
-                    statusCode: 500,
-                    body: "Customer name must be provided."
-                }
-            }
-            
+
             try {
-                console.log("Updating customers...");
-                console.log(params)
-                const data = await ddbDocClient.send(new TransactWriteCommand(params));
-                console.log("Updated customers:", data);
-                if (delParams){
-                    const data2 = await ddbDocClient.send(new DeleteCommand(delParams));
-                }
+                console.log("Updating settings...");
+                const data = await ddbDocClient.send(new UpdateCommand(params));
+                console.log("Updated settings:", data);
                 
                 return {
                     statusCode: 200,

@@ -44,7 +44,6 @@ export const handler = async (event) => {
                 
             }
             
-            //CHANGE TO PUT ITEM IN DB LATER
         
         case "GET":
             query = new URLSearchParams(event.rawQuery);
@@ -103,28 +102,6 @@ export const handler = async (event) => {
                 }
                 
             }
-        //implement PUT
-        // case "PUT":
-        //     if (event.headers["content-type"] !== "application/json") {
-        //         return factoryHttpRes(415, "False, unsupported media type", "Ensure the headers object has the appropriate header", "Content-Type must be application/json");
-        //     }
-        //     const updateData = JSON.parse(event.body);
-        //     console.log(updateData);
-        //     try {
-        //         const writeParam = {
-        //         TransactItems: updateData,
-        //         };
-        //         const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
-        //         return factoryHttpRes(200, "True", "Successfully modified attributes in dynamoDB", "False");
-        //     } catch (err) {
-        //         console.log(err);
-        //         return factoryHttpRes(500, "False,", "Error occured when aupdating attributes in orderDB and orderArchiveDB", "Internal server error");
-        //     }
-
-        //     default:
-        //     return factoryHttpRes(500, "false", "in default case", "true");
-        // }
-        // };
 
         case "PUT":
             customer = JSON.parse(event.body);

@@ -11,24 +11,45 @@ export default function page(){
     }, []);
 
     const checkCustomers = async () => {
-        console.log("Here")
         if (!(sessionStorage.getItem("settings"))){
-            const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings`, {
-                method: "GET"
+            const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings?storeID=11219`, {
+                method: "GET",
             });
-            const settings = await response.json();
-            sessionStorage.setItem("settings", JSON.stringify(settings));
-            setSettings(settings);
+            const responseSettings = await response.json();
+            sessionStorage.setItem("settings", JSON.stringify(responseSettings));
+            setSettings(responseSettings);
         }
         else{
             setSettings(JSON.parse(sessionStorage.getItem("settings")));
         }
-        
     }
 
 
     const submitForm = async (event) => {
         event.preventDefault();
+        const payload = JSON.stringify({
+            StoreID: "11219",
+            Name: settings.Name,
+            Phone: settings.Phone,
+            Address: settings.Address
+        });
+        const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings?storeID=11219`, {
+            method: "PUT",
+            headers: {'Content-Type': 'application/json'},
+            body: payload
+        });
+        if (response.status === 200){
+            sessionStorage.removeItem("settings");
+            alert("Settings updated successfully.");
+        }
+        else{
+            alert("Error updating settings. Check console for more details.");
+            console.error("Error updating settings: ", response.statusText);
+        }
+
+
+
+
 
         // const normalisedNames = customerNames.map(customer => customer.Name.trim().toLowerCase());
         
@@ -68,7 +89,6 @@ export default function page(){
                     onChange={(e) => {
                         const { id, value } = e.target;
                         setSettings(prev => ({ ...prev, [id]: value }));
-                        console.log(settings)
                     }}
                 />
     
@@ -80,7 +100,6 @@ export default function page(){
                     onChange={(e) => {
                         const { id, value } = e.target;
                         setSettings(prev => ({ ...prev, [id]: value }));
-                        console.log(settings)
                     }}
                 />
     
@@ -93,7 +112,6 @@ export default function page(){
                     onChange={(e) => {
                         const { id, value } = e.target;
                         setSettings(prev => ({ ...prev, [id]: value }));
-                        console.log(settings)
                     }}
                     style={{ width: '600px' }}
                 />

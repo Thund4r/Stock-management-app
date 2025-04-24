@@ -27,7 +27,6 @@ export default function page(){
     }
     return(
         <Flex>
-
             <NavBar/>
             <Flex justify="flex-start" align="center" style={{ flex: 1 }}>
                 <Stack w="60%" align="flex-end">
