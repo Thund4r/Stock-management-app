@@ -46,33 +46,6 @@ export default function page(){
             alert("Error updating settings. Check console for more details.");
             console.error("Error updating settings: ", response.statusText);
         }
-
-
-
-
-
-        // const normalisedNames = customerNames.map(customer => customer.Name.trim().toLowerCase());
-        
-        // if (normalisedNames.includes(customerName.trim().toLowerCase())){
-        //     alert("A customer with this name already exists.");
-        //     return;
-        // }
-
-        // const payload = JSON.stringify({
-        //   name: customerName,
-        //   phone: customerPhone,
-        //   address: customerAddress,
-        // });
-        
-        // const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`, {
-        //   method: "POST",
-        //   headers: {'Content-Type': 'application/json'},
-        //   body: payload
-        // });
-        
-        // sessionStorage.removeItem("customers");
-        // router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
-    
     }
 
     return(

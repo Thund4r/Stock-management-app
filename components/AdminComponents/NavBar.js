@@ -8,8 +8,8 @@ export default function NarBar() {
         <NavLink label="Summary (Monthly spending here maybe)" href=""/>
     </NavLink>
     <NavLink label="Products">
-        <NavLink label="All" href=""/>
-        <NavLink label="Category" href=""/>
+        <NavLink label="All" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`}/>
+        <NavLink label="Category" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/category`}/>
     </NavLink>
     <NavLink label="Customers" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`}/>
     <NavLink label="Settings" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/settings`}/>
