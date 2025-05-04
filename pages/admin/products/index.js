@@ -20,7 +20,7 @@ export default function page(){
                 setOpened(false);
                 }}
                 title="Upload your CSV"
-                size="lg"
+                size="100%"
                 centered>
                 <BulkUpload onFinish={handleFinish}/>
             </Modal>

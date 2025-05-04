@@ -1,0 +1,51 @@
+.headerRow {
+display: grid;
+grid-template-columns: 1fr 2fr 1.5fr;
+font-weight: 600;
+margin-bottom: 1rem;
+}
+
+.headerCell {
+padding: 0.5rem;
+font-size: 0.9rem;
+}
+
+.dataRow {
+display: grid;
+grid-template-columns: 1fr 2fr 1.5fr;
+align-items: center;
+gap: 1rem;
+margin-bottom: 0.75rem;
+}
+
+.fileColumn {
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+padding-right: 0.5rem;
+}
+
+.samplesWrapper {
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+}
+
+.sampleText {
+background-color: #f1f3f5;
+padding: 0.2rem 0.5rem;
+border-radius: 4px;
+max-width: 100px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+font-size: 0.875rem;
+}
+
+.select {
+max-width: 200px;
+}
+
+.uploadButton {
+margin-top: 1.5rem;
+}

@@ -1,10 +1,19 @@
-import { Flex, FileInput, Button, Text, Stack } from "@mantine/core";
+import { Flex, FileInput, Button, Text, Stack, Select } from "@mantine/core";
 import { useState } from "react";
 import Papa from "papaparse";
+import styles from "./BulkUpload.module.css";
+
+const DESTINATION_OPTIONS = [
+  "Product Name",
+  "Price",
+  "Original Price",
+  "Product Unit",
+];
 
 export default function BulkUpload({ onFinish }) {
   const [csvData, setCsvData] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [columnMap, setColumnMap] = useState({});
 
   const handleFileUpload = (file) => {
     if (!file) return;
@@ -18,7 +27,6 @@ export default function BulkUpload({ onFinish }) {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
-        console.log("Parsed CSV:", results.data);
         setCsvData(results.data);
         setUploading(false);
       },
@@ -29,9 +37,13 @@ export default function BulkUpload({ onFinish }) {
     });
   };
 
+  const handleSelectChange = (header, value) => {
+    setColumnMap((prev) => ({ ...prev, [header]: value }));
+  };
+
   if (!csvData) {
     return (
-      <Flex direction="column" align="center" gap="md" style={{ marginTop: "2rem" }}>
+      <Flex direction="column" align="center" gap="md" className={styles.container}>
         <h2>Upload a CSV File</h2>
         <FileInput
           placeholder="Choose CSV file"
@@ -46,49 +58,46 @@ export default function BulkUpload({ onFinish }) {
   const headers = Object.keys(csvData[0]);
 
   return (
-    <Flex direction="column" align="center" gap="md" style={{ marginTop: "2rem" }}>
+    <Flex direction="column" align="center" className={styles.container}>
       <h2>CSV Data Preview</h2>
-      <Stack>
-      {headers.map((header) => {
-        const samples = csvData
-          .map((row) => row[header])
-          .filter((value) => value !== undefined && value !== null && value !== "")
-          .slice(0, 3);
+      
+      <div className={styles.table}>
+        <div className={styles.headerRow}>
+          <Text className={styles.headerCell}>Your File Column</Text>
+          <Text className={styles.headerCell}>Your Sample Data</Text>
+          <Text className={styles.headerCell}>Destination Column</Text>
+        </div>
 
-        return (
-          <Flex
-            key={header}
-            direction="row"
-            wrap="wrap"
-            align="center"
-            gap="xs"
-            style={{ marginBottom: "0.75rem" }}
-          >
-            <Text fw={500} size="sm">
-              {header}
-            </Text>
-            {samples.map((sample, index) => (
-              <Text
-                key={index}
-                size="sm"
-                style={{
-                  backgroundColor: "#f1f3f5",
-                  padding: "0.25rem 0.5rem",
-                  borderRadius: "4px",
-                  maxWidth: "200px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {sample}
-              </Text>
-            ))}
-          </Flex>
-        );
-      })}
-      </Stack>
-      <Button onClick={() => onFinish()} style={{ marginTop: "1rem" }}>
+        {headers.map((header) => {
+          const samples = csvData
+            .map((row) => row[header])
+            .filter((value) => value !== undefined && value !== null && value !== "")
+            .slice(0, 3);
+
+          return (
+            <div key={header} className={styles.dataRow}>
+              <Text className={styles.fileColumn}>{header}</Text>
+              <div className={styles.samplesWrapper}>
+                {samples.map((sample, index) => (
+                  <Text key={index} className={styles.sampleText}>
+                    {sample}
+                  </Text>
+                ))}
+              </div>
+              <Select
+                placeholder="- Select one -"
+                data={DESTINATION_OPTIONS}
+                value={columnMap[header] || null}
+                onChange={(value) => handleSelectChange(header, value)}
+                className={styles.select}
+                withinPortal={true}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <Button onClick={() => onFinish(columnMap)} className={styles.uploadButton}>
         Complete
       </Button>
     </Flex>
