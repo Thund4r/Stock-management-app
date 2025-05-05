@@ -3,17 +3,11 @@ import { useState } from "react";
 import Papa from "papaparse";
 import styles from "./BulkUpload.module.css";
 
-const DESTINATION_OPTIONS = [
-  "Product Name",
-  "Price",
-  "Original Price",
-  "Product Unit",
-];
-
-export default function BulkUpload({ onFinish }) {
+export default function BulkUpload({ onFinish, destinationOptions }) {
   const [csvData, setCsvData] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [columnMap, setColumnMap] = useState({});
+  const [columnOptions, setColumnOptions] = useState(destinationOptions);
 
   const handleFileUpload = (file) => {
     if (!file) return;
@@ -38,7 +32,23 @@ export default function BulkUpload({ onFinish }) {
   };
 
   const handleSelectChange = (header, value) => {
-    setColumnMap((prev) => ({ ...prev, [header]: value }));
+    setColumnMap((prevMap) => {
+      const prevValue = prevMap[header];
+
+      // Update the map
+      const updatedMap = { ...prevMap, [header]: value };
+
+      // Update options: remove new selection, re-add previous one if it existed
+      setColumnOptions((prevOptions) => {
+        let newOptions = prevOptions.filter((opt) => opt !== value);
+        if (prevValue && !newOptions.includes(prevValue)) {
+          newOptions = [...newOptions, prevValue];
+        }
+        return newOptions;
+      });
+
+      return updatedMap;
+    });
   };
 
   if (!csvData) {
@@ -74,6 +84,14 @@ export default function BulkUpload({ onFinish }) {
             .filter((value) => value !== undefined && value !== null && value !== "")
             .slice(0, 3);
 
+          const selectedValues = Object.entries(columnMap)
+            .filter(([key]) => key !== header)
+            .map(([, value]) => value);
+
+          const availableOptions = destinationOptions.filter(
+            (option) => !selectedValues.includes(option) || option === columnMap[header]
+          );
+
           return (
             <div key={header} className={styles.dataRow}>
               <Text className={styles.fileColumn}>{header}</Text>
@@ -86,7 +104,7 @@ export default function BulkUpload({ onFinish }) {
               </div>
               <Select
                 placeholder="- Select one -"
-                data={DESTINATION_OPTIONS}
+                data={availableOptions}
                 value={columnMap[header] || null}
                 onChange={(value) => handleSelectChange(header, value)}
                 className={styles.select}

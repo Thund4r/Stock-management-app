@@ -22,7 +22,7 @@ margin-bottom: 0.75rem;
 overflow: hidden;
 text-overflow: ellipsis;
 white-space: nowrap;
-padding-right: 0.5rem;
+padding: 0rem 5rem 0rem 1rem;
 }
 
 .samplesWrapper {

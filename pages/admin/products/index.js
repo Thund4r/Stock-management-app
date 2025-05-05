@@ -22,7 +22,7 @@ export default function page(){
                 title="Upload your CSV"
                 size="100%"
                 centered>
-                <BulkUpload onFinish={handleFinish}/>
+                <BulkUpload onFinish={handleFinish} destinationOptions={["Price", "Name", "Quantity", "Bil"]}/>
             </Modal>
         </Flex>
     )
