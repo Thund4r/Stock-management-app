@@ -35,10 +35,8 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
     setColumnMap((prevMap) => {
       const prevValue = prevMap[header];
 
-      // Update the map
       const updatedMap = { ...prevMap, [header]: value };
 
-      // Update options: remove new selection, re-add previous one if it existed
       setColumnOptions((prevOptions) => {
         let newOptions = prevOptions.filter((opt) => opt !== value);
         if (prevValue && !newOptions.includes(prevValue)) {
@@ -49,6 +47,49 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
 
       return updatedMap;
     });
+  };
+
+  const submitProducts = async () => {
+    if (!csvData || Object.keys(columnMap).length === 0) {
+      alert("Please upload a CSV and complete the mapping.");
+      return;
+    }
+  
+    const activeMappings = Object.entries(columnMap)
+      .filter(([, destination]) => destination && destination !== "");
+
+    const mappedCategory = activeMappings.some(([, destination]) => destination === "Category");
+
+    const transformedProducts = csvData.map((row) => {
+      const mappedRow = Object.fromEntries(
+        activeMappings.map(([source, dest]) => [dest, row[source]])
+      );
+    
+      if (!mappedCategory) {
+        mappedRow.Category = "Uncategorized";
+      }
+    
+      return mappedRow;
+    });
+  
+    console.log("Final mapped products:", transformedProducts);
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transformedProducts),
+      });
+      console.log(response);
+    
+    }
+
+    catch (error) {
+      console.error("Error submitting products:", error);
+    }
+
   };
 
   if (!csvData) {
@@ -115,7 +156,7 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
         })}
       </div>
 
-      <Button onClick={() => onFinish(columnMap)} className={styles.uploadButton}>
+      <Button onClick={() => submitProducts()} className={styles.uploadButton}>
         Complete
       </Button>
     </Flex>
