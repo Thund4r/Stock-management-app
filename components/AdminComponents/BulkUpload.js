@@ -3,7 +3,7 @@ import { useState } from "react";
 import Papa from "papaparse";
 import styles from "./BulkUpload.module.css";
 
-export default function BulkUpload({ onFinish, destinationOptions }) {
+export default function BulkUpload({ onFinish, destinationOptions, defaultValues }) {
   const [csvData, setCsvData] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [columnMap, setColumnMap] = useState({});
@@ -49,7 +49,7 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
     });
   };
 
-  const submitProducts = async () => {
+  const handleFinish = () => {
     if (!csvData || Object.keys(columnMap).length === 0) {
       alert("Please upload a CSV and complete the mapping.");
       return;
@@ -58,37 +58,20 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
     const activeMappings = Object.entries(columnMap)
       .filter(([, destination]) => destination && destination !== "");
 
-    const mappedCategory = activeMappings.some(([, destination]) => destination === "Category");
-
     const transformedProducts = csvData.map((row) => {
       const mappedRow = Object.fromEntries(
         activeMappings.map(([source, dest]) => [dest, row[source]])
       );
     
-      if (!mappedCategory) {
-        mappedRow.Category = "Uncategorized";
+      for (const [key, value] of Object.entries(defaultValues)) {
+        if (!mappedRow[key]) {
+          mappedRow[key] = value;
+        }
       }
     
       return mappedRow;
     });
-  
-    console.log("Final mapped products:", transformedProducts);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(transformedProducts),
-      });
-      console.log(response);
-    
-    }
-
-    catch (error) {
-      console.error("Error submitting products:", error);
-    }
+    onFinish(transformedProducts);
 
   };
 
@@ -156,7 +139,7 @@ export default function BulkUpload({ onFinish, destinationOptions }) {
         })}
       </div>
 
-      <Button onClick={() => submitProducts()} className={styles.uploadButton}>
+      <Button onClick={() => handleFinish()} className={styles.uploadButton}>
         Complete
       </Button>
     </Flex>

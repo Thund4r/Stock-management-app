@@ -1,42 +1,83 @@
-import { QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { BatchWriteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
  * 
  */
+
+function chunkArray(array, size) {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+}
+
 export const handler = async (event) => {
 
     let params;
     let command;
+
     switch (event.httpMethod){
         case "POST":
-            payload = JSON.parse(event.body);
-            params = {
-                TableName: "ProductsDB",
-                KeyConditionExpression: "Category = :c",
-                ExpressionAttributeValues: {
-                    ":c": payload.Category
-                },
-            };
+            const product = JSON.parse(event.body);
+            const chunks = chunkArray(product, 25);
             
-            try {
-                console.log("Getting products...");
-                console.log(params);
-                const data = await ddbDocClient.send(new QueryCommand(params));
-                console.log("Retrieved products:", data.Items);
+            for (let chunk in chunks){
+                console.log(chunks[chunk]);
+                try{
+                    params = {
+                        ProductsDB: chunks[chunk].map((product) => {
+                            const item = {
+                                Name: product.Name,
+                                Category: product.Category,
+                            };
+                        
+                            if (product.Stock !== undefined) {
+                                item.Stock = product.Stock;
+                            }
+                            else {
+                                item.Stock = 9999;
+                            };
+                            if (product.Description !== undefined) {
+                                item.Description = product.Description;
+                            }else {
+                                item.Description = "";
+                            };
+                            if (product.Price !== undefined) {
+                                item.Price = product.Price;
+                            }
+                            else {
+                                item.Price = 0;
+                            };
+                            
+                            return {
+                                PutRequest: {
+                                    Item: item,
+                                },
+                            };
+                        })
+                    };
+                    
+                    response = await ddbDocClient.send(new BatchWriteCommand({RequestItems: params}));
+                    console.log(await response);
+                }
+                catch (err) {
+                    console.error(err);
+                    
+                    return {
+                    statusCode: 500,
+                    body: JSON.stringify(err)
+                    }
                 
-                return {
+                }
+            }
+            return{
                 statusCode: 200,
-                body: JSON.stringify(data.Items)
-                }
-            } catch (err) {
-                console.error(err);
-                return {
-                statusCode: 500,
-                body: JSON.stringify(err)
-                }
-            };
-            //CHANGE TO PUT ITEM IN DB LATER
+                body: JSON.stringify(response)
+            }
+            
+            
         
         case "GET":
             const query = new URLSearchParams(event.rawQuery);
