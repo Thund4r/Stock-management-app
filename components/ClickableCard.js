@@ -7,7 +7,7 @@ export function ClickableCardProduct({ data = [], title = "" }) {
 
     if (data.length !== 0){
         content = data.map(item => (
-            <a href = {`/products/${item.Name}`} key = {item.Name} className={styles.prodCard}> 
+            <a href={`/products/${encodeURIComponent(item.Name)}`} key={item.Name} className={styles.prodCard}>
                 <b>{item.Name}</b> <br/>
                 <small>{item.Description}</small> <br/>
                 RM {item.Price} 

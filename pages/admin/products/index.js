@@ -1,11 +1,32 @@
 import { Button, Flex, Modal } from "@mantine/core";
 import NavBar from "@components/AdminComponents/NavBar";
 import BulkUpload from "@components/AdminComponents/BulkUpload";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ClickableCardProduct } from "@components/ClickableCard";
 
 
 export default function page(){
     const [opened, setOpened] = useState(false);
+    const [products, setProducts] = useState(null)
+    
+      useEffect(() => {
+        checkProducts();
+      }, []);
+    
+      const checkProducts = async () => {
+        if (!(sessionStorage.getItem("products"))){
+          const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+              method: "GET"
+          });
+          const products = await response.json();
+          sessionStorage.setItem("products", JSON.stringify(products));
+          setProducts(products)
+        }
+        else{
+          setProducts(JSON.parse(sessionStorage.getItem("products")))
+        }
+      }
+
     const handleFinish = (products) => {
         const missingName = products.some(product => !product.Name || product.Name.trim() === "");
     
@@ -32,23 +53,11 @@ export default function page(){
         })
     }
 
-    const test = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify([{"Category":"Test", "Name": "test", "Description" : "Duh"}, {"Category":"Test", "Name": "test2", "Duh" : "Duh"}, {"Category":"Test", "Name": "test3", "Duh" : "Duh"}, {"Category":"Test", "Name": "test4", "Duh" : "Duh"}]),
-
-        });
-        const data = await response.text();
-        console.log(data);
-    }
     return(
         <Flex>
             <NavBar/>
             <Button onClick={() => setOpened(true)}>Import CSV</Button>
-            <Button onClick={() => test()}>Test</Button>
+            {products && <ClickableCardProduct data={products} title="" />}
             <Modal
                 opened={opened}
                 onClose={() => {

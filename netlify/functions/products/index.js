@@ -114,6 +114,7 @@ export const handler = async (event) => {
                     },
                 };
                 command = new QueryCommand(params);
+                console.log("Single product provided -------------------");
             }
             else {
                 // When category is not provided
