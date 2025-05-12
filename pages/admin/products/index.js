@@ -1,19 +1,28 @@
-import { Button, Flex, Modal } from "@mantine/core";
+import { Button, Flex, Group, Modal, Stack } from "@mantine/core";
 import NavBar from "@components/AdminComponents/NavBar";
 import BulkUpload from "@components/AdminComponents/BulkUpload";
 import { useEffect, useState } from "react";
-import { ClickableCardProduct } from "@components/ClickableCard";
+import Search from "@components/Search";
+import ProductSearchResult from "@components/CustomerComponents/ProductSearchResult";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 
 
 export default function page(){
     const [opened, setOpened] = useState(false);
     const [products, setProducts] = useState(null)
+    const [categories, setCategories] = useState(null)
+    const searchParams = useSearchParams();
+    const {replace} = useRouter();
+    const pathname = usePathname();
     
-      useEffect(() => {
-        checkProducts();
-      }, []);
     
-      const checkProducts = async () => {
+    useEffect(() => {
+    checkProducts();
+    }, []);
+    
+
+    const checkProducts = async () => {
         if (!(sessionStorage.getItem("products"))){
           const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
               method: "GET"
@@ -21,11 +30,25 @@ export default function page(){
           const products = await response.json();
           sessionStorage.setItem("products", JSON.stringify(products));
           setProducts(products)
+          setCategories([...new Set(products.map(item => item.Category))]);
         }
         else{
           setProducts(JSON.parse(sessionStorage.getItem("products")))
+          setCategories([...new Set(JSON.parse(sessionStorage.getItem("products")).map(item => item.Category))]);
         }
       }
+
+    function filterClick(cat, checked){
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (checked) {
+            params.append("category", cat)
+        }
+        else {
+            params.delete("category", cat)
+        }
+        replace(`${pathname}?${params.toString()}`);
+    }
 
     const handleFinish = (products) => {
         const missingName = products.some(product => !product.Name || product.Name.trim() === "");
@@ -56,8 +79,23 @@ export default function page(){
     return(
         <Flex>
             <NavBar/>
+            <Stack>
+                <Search/>
+                <Group wrap="nowrap" w="60vw" align="flex-start">
+                    <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
+                    {categories && categories.map(cat => {
+                        const checked = searchParams.getAll('category').includes(cat);
+                        return(
+                        <Group wrap="nowrap" key={cat}>
+                            <input type="checkbox" id={cat} checked={checked} onChange={(e) => filterClick(cat, e.target.checked)}/>
+                            <label htmlFor={cat}>{cat}</label>
+                        </Group>)
+                    })}
+                    </Stack>
+                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
+                </Group>
+            </Stack>
             <Button onClick={() => setOpened(true)}>Import CSV</Button>
-            {products && <ClickableCardProduct data={products} title="" />}
             <Modal
                 opened={opened}
                 onClose={() => {

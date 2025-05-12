@@ -12,7 +12,7 @@ export default function ProductSearchResult ({name, category, products}) {
                     span={3} 
                     
                     key = {item.Name}>
-                    <a href = {`/products/${item.Name}`}> 
+                    <a href = {`/products/${encodeURIComponent(item.Name)}`}> 
                         <div>
                             <b>{item.Name}</b> <br/>
                             RM {item.Price} <br/>
@@ -40,14 +40,6 @@ export default function ProductSearchResult ({name, category, products}) {
                 data = data.filter(item => item.Name.toLowerCase().includes(name.toLowerCase()));
             }
             renderContent(data);
-            // const categories = category.map(cat => 
-            //     `category=${cat}&`
-            // ).join("")
-            // const response = await fetch(`/.netlify/functions/products?${categories}name=${name}`, {
-            //     method: "GET"
-            // });
-            // const data = await response.json();
-            // renderContent(data);
         }
 
     }

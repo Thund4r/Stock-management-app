@@ -3,7 +3,7 @@ import Header from '@components/Header'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import Search from '@components/Search'
-import SearchResult from '@components/CustomerComponents/ProductSearchResult'
+import ProductSearchResult from '@components/CustomerComponents/ProductSearchResult'
 import CustomerNav from '@components/CustomerComponents/CustomerNav'
 import Cart from '@components/CustomerComponents/Cart'
 import { useEffect, useState } from 'react'
@@ -39,7 +39,7 @@ export default function page() {
           setProducts(JSON.parse(sessionStorage.getItem("products")))
           setCategories([...new Set(JSON.parse(sessionStorage.getItem("products")).map(item => item.Category))]);
         }
-      }
+    }
 
     function filterClick(cat, checked){
         const params = new URLSearchParams(searchParams.toString());
@@ -76,7 +76,7 @@ export default function page() {
                         </Group>)
                     })}
                     </Stack>
-                    {products && <SearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
+                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
                 </Group>
             <Cart cart = {cart} setCart = {setCart}/>
             </main>

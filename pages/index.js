@@ -39,7 +39,7 @@ export default function page() {
       <main>
         <Header title="10 Gram Gourmet Sdn Bhd" />
         <CustomerNav/>
-        {products && <ClickableCardProduct data={products} title="" />}
+        {products && <ClickableCardProduct data={products} title="" destinationURL={"/products"}/>}
         <button onClick={()=>testFunction()}> CLICK ME </button>
       </main>
       

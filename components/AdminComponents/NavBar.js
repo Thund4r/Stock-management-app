@@ -2,9 +2,9 @@ import { NavLink } from "@mantine/core";
 
 export default function NarBar() {
     return(<div style={{ width: "170px", position: "sticky", top: 0,}}>
-    <NavLink label="Dashboard" href=""/>
+    <NavLink label="Dashboard" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin`}/>
     <NavLink label="Orders">
-        <NavLink label="All" href=""/>
+        <NavLink label="All" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders`}/>
         <NavLink label="Summary (Monthly spending here maybe)" href=""/>
     </NavLink>
     <NavLink label="Products">

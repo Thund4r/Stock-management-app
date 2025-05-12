@@ -1,13 +1,13 @@
 import styles from './ClickableCard.module.css'
 
 
-export function ClickableCardProduct({ data = [], title = "" }) {
+export function ClickableCardProduct({ data = [], title = "" , destinationURL}) {
 
     let content;
 
     if (data.length !== 0){
         content = data.map(item => (
-            <a href={`/products/${encodeURIComponent(item.Name)}`} key={item.Name} className={styles.prodCard}>
+            <a href={`${destinationURL}/${encodeURIComponent(item.Name)}`} key={item.Name} className={styles.prodCard}>
                 <b>{item.Name}</b> <br/>
                 <small>{item.Description}</small> <br/>
                 RM {item.Price} 
