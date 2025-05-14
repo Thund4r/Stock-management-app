@@ -2,7 +2,12 @@ import { BatchWriteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynam
 import { ddbDocClient } from "./ddbDocClient.js";
 
 /**
- * 
+ * POST: Expects a list of products in the body.
+ * GET: Takes a query string with the following parameters(of which are optional):
+ * - name: The name of the product to search for.
+ * - category: The category of the product to filter by.
+ * - single: If set to "True", it will only return a single product with the specified name.
+ * if no parameters are provided, a scan is performed.
  */
 
 function chunkArray(array, size) {
@@ -116,7 +121,6 @@ export const handler = async (event) => {
                 command = new QueryCommand(params);
             }
             else {
-                // When category is not provided
                 params = {
                     TableName: "ProductsDB",
                 };

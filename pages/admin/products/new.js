@@ -1,12 +1,15 @@
 import { Flex, Select, Textarea, TextInput } from "@mantine/core";
 import NavBar from "@components/AdminComponents/NavBar";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 
 export default function page(){
     const [product, setProduct] = useState({Name: "", Description: "", Price: 0, Category: "Uncategorized", Stock: 9999});
     const [products, setProducts] = useState(null);
     const [categories, setCategories] = useState(null);
+    const router = useRouter();
+
 
     useEffect(() => {
         checkProducts();
@@ -31,25 +34,20 @@ export default function page(){
 
     const submitForm = async (event) => {
         event.preventDefault();
-        const payload = JSON.stringify({
-            StoreID: "11219",
-            Name: settings.Name,
-            Phone: settings.Phone,
-            Address: settings.Address
-        });
-        const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings?storeID=11219`, {
-            method: "PUT",
+
+        if (product.Name in products.map(item => item.Name)){
+            alert("Product already exists");
+            return;
+        }
+
+        const payload = JSON.stringify([product]);
+        const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+            method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: payload
         });
-        if (response.status === 200){
-            sessionStorage.removeItem("settings");
-            alert("Settings updated successfully.");
-        }
-        else{
-            alert("Error updating settings. Check console for more details.");
-            console.error("Error updating settings: ", response.statusText);
-        }
+        router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
+        sessionStorage.removeItem("products");
     }
 
     return(
@@ -57,7 +55,7 @@ export default function page(){
             <NavBar/>
             <form onSubmit={submitForm}>
             
-                <h4>Invoice Details</h4>
+                <h4>Add product</h4>
                 <TextInput 
                     id="Name"
                     label="Name"
@@ -85,8 +83,11 @@ export default function page(){
                     required
                     value={product.Price}
                     onChange={(e) => {
-                        const { id, value } = e.target;
+                        let { id, value } = e.target;
                         if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
+                            if (!/^0(\.|$)/.test(value)) {
+                                value = value.replace(/^0+/, '');
+                            }
                             setProduct(prev => ({ ...prev, [id]: value }));
                         }
                     }}
@@ -114,7 +115,7 @@ export default function page(){
                     onChange={(value) => setProduct(prev => ({ ...prev, Category: value }))}
                 />
         
-                <button>Save</button>
+                <button>Add to Products</button>
             </form>
         </Flex>
     )

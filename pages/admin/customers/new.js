@@ -47,7 +47,7 @@ export default function page(){
         sessionStorage.removeItem("customers");
         router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`);
     
-      }
+    }
 
     return(
         <Flex>

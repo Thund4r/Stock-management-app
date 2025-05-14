@@ -95,7 +95,8 @@ export default function page(){
                     {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
                 </Group>
             </Stack>
-            <Button onClick={() => setOpened(true)}>Import CSV</Button>
+            <a href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/new`}><Button>Add Product</Button></a>
+            <Button onClick={() => setOpened(true)}>Import Products</Button>
             <Modal
                 opened={opened}
                 onClose={() => {
