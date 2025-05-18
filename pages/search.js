@@ -76,7 +76,7 @@ export default function page() {
                         </Group>)
                     })}
                     </Stack>
-                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
+                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products} destinationURL={"/products"}/>}
                 </Group>
             <Cart cart = {cart} setCart = {setCart}/>
             </main>

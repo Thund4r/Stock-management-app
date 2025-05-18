@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Grid } from '@mantine/core'
 
-export default function ProductSearchResult ({name, category, products}) {
+export default function ProductSearchResult ({ name, category, products, destinationURL }) {
 
     const [content, setContent] = useState(<></>);
 
@@ -12,7 +12,7 @@ export default function ProductSearchResult ({name, category, products}) {
                     span={3} 
                     
                     key = {item.Name}>
-                    <a href = {`/products/${encodeURIComponent(item.Name)}`}> 
+                    <a href = {`${destinationURL}/${encodeURIComponent(item.Name)}`}> 
                         <div>
                             <b>{item.Name}</b> <br/>
                             RM {item.Price} <br/>

@@ -109,7 +109,7 @@ export async function getStaticPaths() {
   } catch (error) {
     console.error("Error fetching customers:", error);
   }
-  const paths = customers.map(item => ({params: {customer: item.Name}}));
+  const paths = customers.map(item => ({params: {customer: encodeURIComponent(item.Name)}}));
 
   return {
     paths,
@@ -118,9 +118,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${params.customer}`);
+  const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${encodeURIComponent(params.customer)}`);
   const customerTest = (await customerFetch.json())[0];
-  const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${params.customer}`);
+  const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${encodeURIComponent(params.customer)}`);
   const orders = (await ordersFetch.json()).items;
   return {
     props: {

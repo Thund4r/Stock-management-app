@@ -106,70 +106,63 @@ export const handler = async (event) => {
         case "PUT":
             customer = JSON.parse(event.body);
             let delParams = null;
+
             if (Array.isArray(customer) && customer.length > 1) {
-                // If customer is an array and longer than 1
-                // Do later ----------------------------------------------------!!!
+                // TODO: Handle bulk case later
             }
             else if (customer.length === 1) {
-                // If there is only 1 customer
-                params = {
-                    TransactItems: [{ 
-                        Update: {
+                const item = customer[0];
+
+                const putParams = {
+                    TransactItems: [{
+                        Put: {
                             TableName: "CustomerDB",
-                            Key: { Name: customer[0].newName },
-                            UpdateExpression: "SET #phone = :p, #address = :a, #orders = :o",
-                            ExpressionAttributeValues: {
-                                ":p": customer[0].phone,
-                                ":a": customer[0].address,
-                                ":o": customer[0].orders,
-                            },
-                            ExpressionAttributeNames: {
-                                "#phone": "Phone", 
-                                "#address": "Address", 
-                                "#orders": "Orders"
-                            },
+                            Item: {
+                                Name: item.newName,
+                                Phone: item.phone,
+                                Address: item.address,
+                                Orders: item.orders,
+                            }
                         }
                     }]
-                }
-                if (customer[0].newName !== customer[0].oldName){
+                };
+
+                if (item.newName !== item.oldName) {
                     delParams = {
                         TableName: "CustomerDB",
-                        Key: { Name: customer[0].oldName }
+                        Key: { Name: item.oldName }
+                    };
+                }
+
+                try {
+                    console.log("Putting customer...");
+                    const data = await ddbDocClient.send(new TransactWriteCommand(putParams));
+                    console.log("Customer put:", data);
+
+                    if (delParams) {
+                        await ddbDocClient.send(new DeleteCommand(delParams));
                     }
+
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify(data)
+                    };
+                }
+                catch (err) {
+                    console.error(err);
+                    return {
+                        statusCode: 500,
+                        body: JSON.stringify(err)
+                    };
                 }
             } 
             else {
-                // When name is not provided
-                return{
+                return {
                     statusCode: 500,
                     body: "Customer name must be provided."
-                }
+                };
             }
-            
-            try {
-                console.log("Updating customers...");
-                console.log(params)
-                const data = await ddbDocClient.send(new TransactWriteCommand(params));
-                console.log("Updated customers:", data);
-                if (delParams){
-                    const data2 = await ddbDocClient.send(new DeleteCommand(delParams));
-                }
-                
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify(data)
-                }
 
-            } 
-            catch (err) {
-                console.error(err);
-                
-                return {
-                statusCode: 500,
-                body: JSON.stringify(err)
-                }
-                
-            }
 
         case "DELETE":
             customer = JSON.parse(event.body);

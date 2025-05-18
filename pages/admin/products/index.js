@@ -92,7 +92,7 @@ export default function page(){
                         </Group>)
                     })}
                     </Stack>
-                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products}/>}
+                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products} destinationURL={"/admin/products"}/>}
                 </Group>
             </Stack>
             <a href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/new`}><Button>Add Product</Button></a>
