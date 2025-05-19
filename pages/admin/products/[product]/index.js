@@ -32,6 +32,24 @@ export default function page({ item }) {
       setProduct(item);
   }
 
+  const deleteCustomer = async () => {
+    if (confirm('Delete this item?')) {
+      const payload = JSON.stringify({
+        Name: item.Name,
+        Category: item.Category,
+      });
+  
+      const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+          method: "DELETE",
+          headers: {'Content-Type': 'application/json'},
+          body: payload
+        });
+  
+      sessionStorage.removeItem("products");
+      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
+    };
+  }
+
   const submitForm = async (event) => {
     event.preventDefault();
 
@@ -53,8 +71,8 @@ export default function page({ item }) {
           headers: {'Content-Type': 'application/json'},
           body: payload
       });
-      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
       sessionStorage.removeItem("products");
+      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
     }
   }
 
@@ -127,6 +145,7 @@ export default function page({ item }) {
     
         <button>Save</button>
     </form>
+    <button onClick={deleteCustomer} style={{height: "30px"}}>Delete</button>
     </>
     );
   };

@@ -9,11 +9,9 @@ export default function page(){
     const [products, setProducts] = useState(null);
     const [categories, setCategories] = useState(null);
     const router = useRouter();
-    const [originalName, setOriginalName] = useState(null);
 
     useEffect(() => {
     checkProducts();
-    setOriginalName(item.Name);
     }, []);
 
 
@@ -37,7 +35,7 @@ export default function page(){
     const submitForm = async (event) => {
         event.preventDefault();
 
-        if (product.Name.toLowerCase().trim() !== originalName.toLowerCase().trim() && products.map(item => item.Name.toLowerCase().trim()).includes(product.Name.toLowerCase().trim())) {
+        if (products.map(item => item.Name.toLowerCase().trim()).includes(product.Name.toLowerCase().trim())) {
             
         alert("Product with this name already exists");
         return;

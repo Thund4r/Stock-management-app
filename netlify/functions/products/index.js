@@ -185,9 +185,7 @@ export const handler = async (event) => {
             }
             
             try {
-                console.log(product);
                 console.log("Updating products...");
-                console.log(params)
                 const data = await ddbDocClient.send(new TransactWriteCommand(params));
                 console.log("Updated products:", data);
                 if (delParams){
@@ -210,8 +208,34 @@ export const handler = async (event) => {
                 
             }
         
+            case "DELETE":
+                product = JSON.parse(event.body);
+                params = {
+                    TableName: "ProductsDB",
+                    Key: { Category: product.Category, Name: product.Name }
+                };
+                try {
+                    console.log("Deleting product...");
+                    console.log(params)
+                    const data = await ddbDocClient.send(new DeleteCommand(params));
+                    console.log("Deleted product:", data);
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify(data)
+                    }
+
+                } 
+                catch (err) {
+                    console.error(err);
+                    return {
+                    statusCode: 500,
+                    body: JSON.stringify(err)
+                    }
+                    
+                }
+
+
         default:
-            console.log(event);
             return{
                 statusCode: 500,
                 body: "unrecognized HTTP Method, must be one of GET/POST/PUT/DELETE."

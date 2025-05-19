@@ -42,7 +42,6 @@ export default function page({ customerTest, orders }) {
 
 
   if (customer){
-    console.log(orders);
 
     content = (<>
     <Stack>
