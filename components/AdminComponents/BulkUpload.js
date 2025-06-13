@@ -7,7 +7,6 @@ export default function BulkUpload({ onFinish, destinationOptions, defaultValues
   const [csvData, setCsvData] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [columnMap, setColumnMap] = useState({});
-  const [columnOptions, setColumnOptions] = useState(destinationOptions);
 
   const handleFileUpload = (file) => {
     if (!file) return;
@@ -33,18 +32,7 @@ export default function BulkUpload({ onFinish, destinationOptions, defaultValues
 
   const handleSelectChange = (header, value) => {
     setColumnMap((prevMap) => {
-      const prevValue = prevMap[header];
-
       const updatedMap = { ...prevMap, [header]: value };
-
-      setColumnOptions((prevOptions) => {
-        let newOptions = prevOptions.filter((opt) => opt !== value);
-        if (prevValue && !newOptions.includes(prevValue)) {
-          newOptions = [...newOptions, prevValue];
-        }
-        return newOptions;
-      });
-
       return updatedMap;
     });
   };

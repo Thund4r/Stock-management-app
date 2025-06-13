@@ -51,12 +51,20 @@ export default function page(){
     }
 
     const handleFinish = (products) => {
-        const missingName = products.some(product => !product.Name || product.Name.trim() === "");
-    
-        if (missingName) {
-            alert("All rows must include a Name field.");
-            return;
+        const seenNames = new Set();
+        for (const product of products) {
+            const name = product.Name?.trim().toLowerCase();
+            if (!name) {
+                alert("All rows must include a Name field.");
+                return;
+            }
+            if (seenNames.has(name)) {
+                alert(`Duplicate product name found: "${product.Name}"`);
+                return;
+            }
+            seenNames.add(name);
         }
+
         products.forEach(product => {
             if (product.Price) {
               const cleaned = product.Price.replace(/[^0-9.,]/g, "").replace(",", ".");
@@ -66,7 +74,6 @@ export default function page(){
               product.Price = null;
             }
         });
-        console.log("Upload finished");
         const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
             method: "POST",
             headers: {
@@ -74,6 +81,19 @@ export default function page(){
             },
             body: JSON.stringify(products),
         })
+
+        response.then(res => {
+            if (res.status === 200) {
+                sessionStorage.removeItem("products");
+                alert("Products uploaded successfully.");
+                checkProducts();
+            } else {
+                alert("Error uploading products. Check console for more details.");
+                console.error("Error uploading products: ", res.statusText);
+            }
+        })
+
+        sessionStorage.removeItem("products");
     }
 
     return(
