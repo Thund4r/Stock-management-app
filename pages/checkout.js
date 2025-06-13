@@ -14,6 +14,7 @@ export default function page() {
   const [date, setDate] = useState(null);
   const [customerName, setCustomerName] = useState("");
   const [customerNames, setCustomerNames] = useState([]);
+  const [settings, setSettings] = useState({});
 
   const getCustomerNames = async () => {
     const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?nameOnly=True`);
@@ -23,7 +24,22 @@ export default function page() {
   useEffect(() => {
       setCart(JSON.parse(localStorage.getItem("cart")) || []);
       getCustomerNames();
+      checkSettings();
     }, []);
+
+  const checkSettings = async () => {
+      if (!(sessionStorage.getItem("settings"))){
+          const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings?storeID=11219`, {
+              method: "GET",
+          });
+          const responseSettings = await response.json();
+          sessionStorage.setItem("settings", JSON.stringify(responseSettings));
+          setSettings(responseSettings);
+      }
+      else{
+          setSettings(JSON.parse(sessionStorage.getItem("settings")));
+      }
+  }
 
   const updateQuant = (item, newQuantity) => {
     const itemIndex = cart.findIndex((oldItem) => oldItem.product === item.product)
@@ -53,6 +69,7 @@ export default function page() {
       custName: customerName,
       cart: cart,
       delivDate: date.toLocaleDateString("en-GB"),
+      phone: settings.Phone,
     })
     
     const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {

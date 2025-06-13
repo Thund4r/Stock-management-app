@@ -312,8 +312,6 @@ export const handler = async (event) => {
       } catch (err) {
         return factoryHttpRes(500, "False", "Error occured in putting and updating new entries section for tables", "Internal server error");
       }
-
-      /*
       
       const order_items = orderData.cart.map((item) => `${item.product} (${item.quantity})`).join(", ");
       const payload = JSON.stringify({
@@ -321,13 +319,13 @@ export const handler = async (event) => {
         order_items: order_items,
         order_delivery: orderData.delivDate,
         order_total: `RM ${totalPriceCalc(orderData.cart)}`,
-        order_customer: orderData.outName,
+        order_customer: orderData.custName,
+        Phone: orderData.phone,
       });
       const responseConf = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/confirmation`, {
         method: "POST",
         body: payload,
       });
-       */
 
 
       return factoryHttpRes(200, "True", "Successfully added item to tables", "False");

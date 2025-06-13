@@ -1,4 +1,4 @@
-import { Flex, Select, Textarea, TextInput } from "@mantine/core";
+import { Flex, Select, TextInput } from "@mantine/core";
 import NavBar from "@components/AdminComponents/NavBar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";

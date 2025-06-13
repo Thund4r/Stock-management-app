@@ -7,10 +7,10 @@ export default function page(){
     const [settings, setSettings] = useState({Name: "", Phone: "", Address: ""});
     
     useEffect(() => {
-        checkCustomers();
+        checkSettings();
     }, []);
 
-    const checkCustomers = async () => {
+    const checkSettings = async () => {
         if (!(sessionStorage.getItem("settings"))){
             const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/settings?storeID=11219`, {
                 method: "GET",
