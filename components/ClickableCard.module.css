@@ -29,4 +29,5 @@
     flex-direction: row;
     padding: 1rem;
     line-height: 0.8;
+    justify-content: space-between;
 }

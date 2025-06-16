@@ -81,11 +81,11 @@ export function ClickableCardOrder({ data = [], title = "" }){
 
     if (data.length !== 0){
         content = data.map(item => (
-            <a href = {`/admin/orders/${item.Name}`} key = {item.Name} className={styles.ordCard}> 
+            <a href={`/admin/orders/${item.orderID}`} key = {item.orderID} className={styles.ordCard}> 
                 <b style={{paddingRight:"18px"}}>{item.orderID}</b>
                 <div>{item.customerName}</div>
                 <div>{item.totalPrice}</div>
-                <div>Order date here</div>
+                <div>{item.deliveryDate}</div>
             </a>
         ));
     }
