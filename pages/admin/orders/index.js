@@ -17,7 +17,7 @@ export default function page(){
             });
             response = await response.json();
             const order = response.items.filter(order => !isNaN(order.orderID))
-            .sort((a, b) => Number(a.orderID) - Number(b.orderID));
+            .sort((a, b) => Number(b.orderID) - Number(a.orderID));
             setOrders(order);
     }
     return(
@@ -25,7 +25,7 @@ export default function page(){
             <NavBar/>
             <Flex justify="flex-start" align="center" style={{ flex: 1 }}>
                 <Stack w="60%" align="flex-end">
-                    <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers/new`}><button>Add new customer</button></a>
+                    <a href ={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/new`}><button>Add new order</button></a>
                     {orders && (
                         <Box w="600px">
                         <ClickableCardOrder data={orders} />

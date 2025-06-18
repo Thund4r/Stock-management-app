@@ -95,6 +95,17 @@ export function ClickableCardOrder({ data = [], title = "" }){
             
         </p>);
     }
+    content = (
+        <> 
+            <div className={styles.ordCard}>
+                <b style={{paddingRight:"18px"}}>Order ID</b>
+                <div>Customer</div>
+                <div>Total Price</div>
+                <div>Delivery Date</div>
+            </div>
+            {content}
+        </>
+    );
     if (title !== ""){
         content = (
             <>
