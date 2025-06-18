@@ -128,7 +128,7 @@ export default function page(){
                 <BulkUpload
                     onFinish={handleFinish}
                     destinationOptions={["Price", "Name", "Stock", "Category", "Description"]}
-                    defaultValues={{ Category: "Uncategorized" }}
+                    defaultValues={{ Category: "Uncategorized" , Stock: 9999 , Price: 0 }}
                 />
             </Modal>
         </Flex>
