@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Header from '@components/Header'
 import { useEffect, useState } from "react";
-import QtSelector from "@components/CustomerComponents/QtSelector";
+import QtSelector from "@components/QtSelector";
 import styles from './checkout.module.css';
 import { Select, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
@@ -116,7 +116,7 @@ export default function page() {
                 <div className={styles.rowContainer}>
                 <b style={{ display: "block", marginBottom: "16px"}}>RM {item.price}</b> <div style={{cursor:"pointer", color:"rgba(0,0,0,0.7)"}}onClick={() => {removeItem(item)}}>delete</div>
                 </div>
-                <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} initialQuant={item.quantity} maxQuant={item.stock}/>
+                <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} quantity={item.quantity} maxQuant={item.stock}/>
               </li>
             ))}
           </div>

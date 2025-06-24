@@ -1,11 +1,12 @@
 import Head from "next/head";
 import Header from '@components/Header'
 import { useEffect, useState } from "react";
-import QtSelector from "@components/CustomerComponents/QtSelector";
+import QtSelector from "@components/QtSelector";
 import styles from './new.module.css';
 import { Select, TextInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useRouter } from 'next/router';
+import ItemSelector from "@components/ItemSelector";
 
 
 export default function page() {
@@ -15,6 +16,7 @@ export default function page() {
   const [customerName, setCustomerName] = useState("");
   const [customerNames, setCustomerNames] = useState([]);
   const [settings, setSettings] = useState({});
+  const [products, setProducts] = useState(null)
 
   const getCustomerNames = async () => {
     const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?nameOnly=True`);
@@ -25,6 +27,7 @@ export default function page() {
       setCart(JSON.parse(localStorage.getItem("cart")) || []);
       getCustomerNames();
       checkSettings();
+      checkProducts();
     }, []);
 
   const checkSettings = async () => {
@@ -41,12 +44,46 @@ export default function page() {
       }
   }
 
+  const checkProducts = async () => {
+    if (!(sessionStorage.getItem("products"))){
+      const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+          method: "GET"
+      });
+      const products = await response.json();
+      sessionStorage.setItem("products", JSON.stringify(products));
+      setProducts(products)
+    }
+    else{
+      setProducts(JSON.parse(sessionStorage.getItem("products")))
+    }
+  }
+
+  const addToCart = (newItem) => {
+    console.log(cart);
+    setCart((prevCart) => {
+      const itemIndex = prevCart.findIndex(item => item.product === newItem.product);
+      let newCart;
+
+      if (itemIndex === -1) {
+        newCart = [...prevCart, newItem];
+      } else {
+        newCart = [...prevCart];
+        newCart[itemIndex].quantity += newItem.quantity;
+      }
+
+      localStorage.setItem("cart", JSON.stringify(newCart));
+      return newCart;
+    });
+};
+
+
   const updateQuant = (item, newQuantity) => {
     const itemIndex = cart.findIndex((oldItem) => oldItem.product === item.product)
     const newCart = [...cart];
     newCart[itemIndex].quantity = newQuantity;
     localStorage.setItem("cart", JSON.stringify(newCart));
     setCart(newCart);
+    console.log(products);
   }
 
   const removeItem = (item) => {
@@ -89,9 +126,6 @@ export default function page() {
           <link rel="icon" href="/favicon.ico" />
         </Head>
       <Header title="10 Gram Gourmet Sdn Bhd" />
-      {cart.length === 0 ? (
-        <p>The cart is empty.</p>
-      ) : (
         <ul>
           <form onSubmit={submitForm}>
           <div className={styles.formComponent}>
@@ -107,6 +141,11 @@ export default function page() {
           </div>
 
           <div className={styles.formComponent}>
+            <ItemSelector 
+              products={products}
+              onItemAdd={(item) => {
+                addToCart(item);
+              }}/>
             <h4>Items</h4>
             {cart.map((item, index) => (
               <li key={index}>
@@ -116,7 +155,7 @@ export default function page() {
                 <div className={styles.rowContainer}>
                 <b style={{ display: "block", marginBottom: "16px"}}>RM {item.price}</b> <div style={{cursor:"pointer", color:"rgba(0,0,0,0.7)"}}onClick={() => {removeItem(item)}}>delete</div>
                 </div>
-                <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} initialQuant={item.quantity} maxQuant={item.stock}/>
+                <QtSelector onQuantityChange={(newQuantity) => updateQuant(item, newQuantity)} quantity={item.quantity} maxQuant={item.stock}/>
               </li>
             ))}
           </div>
@@ -142,7 +181,6 @@ export default function page() {
           <button>Place Order</button>
           </form>
         </ul>
-      )}
       </div>
   )
 }

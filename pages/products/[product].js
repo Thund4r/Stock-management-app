@@ -1,11 +1,11 @@
-import QtSelector from '@components/CustomerComponents/QtSelector';
+import QtSelector from '@components/QtSelector';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
  
 export default function page({ item }) {
   const router = useRouter();
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState([]);
 
   let content = <></>
@@ -41,7 +41,7 @@ export default function page({ item }) {
         Quantity 
       </div>
       {product.Stock<10 && <div style={{marginRight:"80px"}}>{product.Stock} left</div>}
-      <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)} maxQuant={product.Stock}/>
+      <QtSelector onQuantityChange={(newQuantity) => setQuantity(newQuantity)} maxQuant={product.Stock} quantity = {quantity}/>
     </div>
     </>
     )
