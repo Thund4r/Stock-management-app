@@ -84,9 +84,15 @@ export function ClickableCardOrder({ data = [], title = "" }){
             <a href={`/admin/orders/${item.orderID}`} key = {item.orderID} className={styles.ordCard}> 
                 <b style={{paddingRight:"18px"}}>{item.orderID}</b>
                 <div>{item.customerName}</div>
-                <div>{item.totalPrice}</div>
+                <div>RM {item.totalPrice}</div>
                 <div>{item.deliveryDate}</div>
-                <div>{item.deliveryStatus}</div>
+                <div style={{
+                color: item.deliveryStatus === "Delivered" ? "green" :
+                        item.deliveryStatus === "Pending" ? "orange" :
+                        item.deliveryStatus === "Cancelled" ? "red" : "black"
+                }}>
+                {item.deliveryStatus}
+                </div>
             </a>
         ));
     }
