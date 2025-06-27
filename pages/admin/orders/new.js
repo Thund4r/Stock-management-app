@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Header from '@components/Header'
+import Header from '@components/Header';
 import { useEffect, useState } from "react";
 import QtSelector from "@components/QtSelector";
 import styles from './new.module.css';

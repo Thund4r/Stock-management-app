@@ -22,7 +22,6 @@ export const handler = async (event) => {
                 Item: {
                     Name: customer.name,
                     Address: customer.address,
-                    Orders: [],
                     Phone: customer.phone,
                 },
             }

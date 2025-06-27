@@ -86,6 +86,7 @@ export function ClickableCardOrder({ data = [], title = "" }){
                 <div>{item.customerName}</div>
                 <div>{item.totalPrice}</div>
                 <div>{item.deliveryDate}</div>
+                <div>{item.deliveryStatus}</div>
             </a>
         ));
     }
@@ -102,6 +103,7 @@ export function ClickableCardOrder({ data = [], title = "" }){
                 <div>Customer</div>
                 <div>Total Price</div>
                 <div>Delivery Date</div>
+                <div>Delivery Status</div>
             </div>
             {content}
         </>
