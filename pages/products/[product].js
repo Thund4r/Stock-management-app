@@ -92,6 +92,11 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(params.product)}&single=True`);
+    console.log(response);
+    if (!response.ok) {
+      console.error("Failed to fetch product:", response.statusText);
+      return { notFound: true };
+    }
     const data = await response.json();
 
     const item = Array.isArray(data) && data.length > 0 ? data[0] : null;
