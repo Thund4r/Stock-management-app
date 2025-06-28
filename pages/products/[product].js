@@ -85,14 +85,14 @@ export async function getStaticPaths() {
   const paths = products.map(item => ({params: {product: item.Name}}));
   return {
     paths,
-    fallback: false,
+    fallback: blocking,
   }
 }
 
 export async function getStaticProps({ params }) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(params.product)}&single=True`);
-    if (!response.ok || !response) {
+    if (!response) {
       console.error("Failed to fetch product:", response.statusText);
       return { notFound: true };
     }
