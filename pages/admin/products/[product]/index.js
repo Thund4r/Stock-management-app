@@ -188,6 +188,9 @@ export async function getStaticProps({ params }) {
   }
   try {
     const item = (await response.json())[0];
+    if (!item) {
+      return { notFound: true };
+    }
     return {
       props: {
         item,
