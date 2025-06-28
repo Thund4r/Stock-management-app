@@ -186,10 +186,17 @@ export async function getStaticProps({ params }) {
     console.error("Failed to fetch product:", response.statusText);
     return { notFound: true };
   }
-  const item = (await response.json())[0];
-  return {
-    props: {
-      item,
-    },
-  };
+  try {
+    const item = (await response.json())[0];
+    return {
+      props: {
+        item,
+      },
+    };
+  }
+  catch (error) {
+    console.error("Error fetching product:", error);
+    return { notFound: true };
+  }
+  
 }
