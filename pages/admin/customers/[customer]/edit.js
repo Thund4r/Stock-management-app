@@ -129,6 +129,13 @@ export async function getStaticProps({ params }) {
     return { notFound: true };
   }
   const orders = (await ordersFetch.json()).items;
+
+  if (!customerProp) {
+    return { notFound: true };
+  }
+  if (!orders) {
+    return { notFound: true };
+  }
   return {
     props: {
        customerProp,
