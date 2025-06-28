@@ -15,31 +15,21 @@ const createPagesToRender = (orders = []) => {
 
 export const getStaticPaths = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`);
-
-    if (!res.ok) {
-      console.error("Fetch failed with status:", res.status);
-      return { paths: [], fallback: 'blocking' };
-    }
-
-    const data = await res.json();
-    console.log("Orders API response during build:", JSON.stringify(data, null, 2));
-    const orders = Array.isArray(data?.items) ? data.items : [];
-
+    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
+      method: "GET",
+    });
+    console.log(response)
+    response = await response.json();
+    const orders = response.items;
     return {
       paths: createPagesToRender(orders),
       fallback: 'blocking',
     };
   } catch (err) {
-    console.error("Error in getStaticPaths:", err);
-
-    return {
-      paths: [],
-      fallback: 'blocking',
-    };
+    console.log("Failed to retrieve orders from orderDB during build time");
+    console.log(err);
   }
 };
-
 
 
 export const getStaticProps = async ({ params }) => {
@@ -61,8 +51,7 @@ export const getStaticProps = async ({ params }) => {
       },
     };
   }catch(err){
-    console.log("Error occured in orderID Api", err);
-    return { notFound: true };
+    console.log("Error occured in orderID Api", err)
   } 
   
 };
