@@ -117,8 +117,17 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${params.customer}`);
-  const  customerProp = (await customerFetch.json())[0];
+  if (!customerFetch) {
+    console.error("Failed to fetch customer:", customerFetch.statusText);
+    return { notFound: true };
+  }
+  const customerProp = (await customerFetch.json())[0];
+  
   const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${params.customer}`);
+  if (!ordersFetch) {
+    console.error("Failed to fetch orders:", ordersFetch.statusText);
+    return { notFound: true };
+  }
   const orders = (await ordersFetch.json()).items;
   return {
     props: {
