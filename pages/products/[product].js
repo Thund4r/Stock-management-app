@@ -90,14 +90,23 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(params.product)}&single=True`, {
-    method: "GET"
-  });
-  const item = (await response.json())[0];
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(params.product)}&single=True`);
+    const data = await response.json();
 
-  return {
-    props: {
-      item,
-    },
-  };
+    const item = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+    if (!item) {
+      return { notFound: true };
+    }
+
+    return {
+      props: {
+        item,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return { notFound: true };
+  }
 }
