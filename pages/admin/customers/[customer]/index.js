@@ -123,7 +123,12 @@ export async function getStaticProps({ params }) {
   const response = await ordersFetch.json();
   const orders = response.items.filter(order => !isNaN(order.orderID))
             .sort((a, b) => Number(b.orderID) - Number(a.orderID));
-  
+  if (!customerTest) {
+    return { notFound: true };
+  }
+  if (!orders) {
+    return { notFound: true };
+  }
   return {
     props: {
       customerTest,
