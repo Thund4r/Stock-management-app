@@ -4,6 +4,7 @@ import { Select } from "@mantine/core";
 import { useState } from "react";
 
 const createPagesToRender = (orders) => {
+  ordersHtml = Array.isArray(orders) ? orders : [];
   return orders.map(({ orderID }) => {
     return { 
       params: {
@@ -122,7 +123,7 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
         <div className={styles.formComponent}>
           <h4>Items</h4>
           <ul>
-            {cart.map((item, index) => (
+            {cart && cart.map((item, index) => (
               <li key={index}>
                 <div>{item.product}</div>
                 <div>Quantity: {item.quantity}</div>
