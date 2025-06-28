@@ -77,7 +77,8 @@ export default function page() {
       headers: {'Content-Type': 'application/json'},
       body: payload
     })
-
+    setCart([]);
+    localStorage.setItem("cart", JSON.stringify([]));
     router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}`)
 
   }

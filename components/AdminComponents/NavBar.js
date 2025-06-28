@@ -9,7 +9,7 @@ export default function NarBar() {
     </NavLink>
     <NavLink label="Products">
         <NavLink label="All" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`}/>
-        <NavLink label="Category" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/category`}/>
+        <NavLink label="Category" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/category`}/>
     </NavLink>
     <NavLink label="Customers" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/customers`}/>
     <NavLink label="Settings" href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/settings`}/>

@@ -37,7 +37,6 @@ export const getStaticProps = async ({ params }) => {
     let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orderID?id=${params.id}`, { method: "GET" });
   
     response = await response.json()
-    console.log("Response from orderID API", response)
     if(!response.items){
       return { notFound: true }
     }

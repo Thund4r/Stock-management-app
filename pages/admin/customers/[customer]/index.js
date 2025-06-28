@@ -120,7 +120,10 @@ export async function getStaticProps({ params }) {
   const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${encodeURIComponent(params.customer)}`);
   const customerTest = (await customerFetch.json())[0];
   const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${encodeURIComponent(params.customer)}`);
-  const orders = (await ordersFetch.json()).items;
+  const response = await ordersFetch.json();
+  const orders = response.items.filter(order => !isNaN(order.orderID))
+            .sort((a, b) => Number(b.orderID) - Number(a.orderID));
+  
   return {
     props: {
       customerTest,
