@@ -182,6 +182,10 @@ export async function getStaticProps({ params }) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(params.product)}&single=True`, {
     method: "GET"
   });
+  if (!response) {
+    console.error("Failed to fetch product:", response.statusText);
+    return { notFound: true };
+  }
   const item = (await response.json())[0];
   return {
     props: {
