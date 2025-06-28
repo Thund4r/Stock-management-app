@@ -118,11 +118,22 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${encodeURIComponent(params.customer)}`);
+  if (!customerFetch) {
+    console.error("Failed to fetch customer:", customerFetch.statusText);
+    return { notFound: true };
+  }
   const customerTest = (await customerFetch.json())[0];
+  
   const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${encodeURIComponent(params.customer)}`);
+  if (!ordersFetch) {
+    console.error("Failed to fetch orders:", ordersFetch.statusText);
+    return { notFound: true };
+  }
   const response = await ordersFetch.json();
+
   const orders = response.items.filter(order => !isNaN(order.orderID))
             .sort((a, b) => Number(b.orderID) - Number(a.orderID));
+            
   if (!customerTest) {
     return { notFound: true };
   }
