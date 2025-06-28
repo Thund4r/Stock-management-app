@@ -3,8 +3,7 @@ import styles from './[id].module.css';
 import { Select } from "@mantine/core";
 import { useState } from "react";
 
-const createPagesToRender = (orders) => {
-  ordersHtml = Array.isArray(orders) ? orders : [];
+const createPagesToRender = (orders = []) => {
   return orders.map(({ orderID }) => {
     return { 
       params: {
