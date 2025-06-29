@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 export const handler = async (event) => {
     const payload = JSON.parse(event.body);
     const recipientNumber = payload.Phone;

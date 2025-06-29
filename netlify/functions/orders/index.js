@@ -62,6 +62,7 @@ const getRidOfNonNumericPrimaryKey = (arr) => {
 //This is how you're supposed declare the function for AWS Lambda to know which function to use when the API is called.
 export const handler = async (event) => {
   //the .httpmethod attribute only exists because AWS Lambda defines that attribute for the event object it passes into the handler function when it calls it.
+  
   switch (event.httpMethod) {
     //test this method to see if it works as you expect it to.
     case "POST":
