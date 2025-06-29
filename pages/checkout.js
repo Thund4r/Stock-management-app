@@ -72,15 +72,14 @@ export default function page() {
       phone: settings.Phone,
     })
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
+    const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: payload
     })
-    console.log(cart);
-    // setCart([]);
-    // localStorage.setItem("cart", JSON.stringify([]));
-    //router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}`)
+    setCart([]);
+    localStorage.setItem("cart", JSON.stringify([]));
+    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}`)
 
   }
 
