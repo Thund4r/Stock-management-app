@@ -54,7 +54,7 @@ export default function page({ item }) {
       const newCart = [...cart, newItem];
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
-      router.back();
+      router.push('/');
     }
     else{
       const newCart = [...cart]
