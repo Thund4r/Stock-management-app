@@ -309,8 +309,28 @@ export const handler = async (event) => {
             },
           ],
         };
+        for (const item of orderData.cart) {
+          if (item.stock !== 9999) {
+            writeParam.TransactItems.push({
+              Update: {
+                TableName: "ProductsDB",
+                Key: {
+                  Category: item.category,
+                  Name: item.product,
+                },
+                UpdateExpression: "SET Stock = Stock - :qty",
+                ExpressionAttributeValues: {
+                  ":qty": item.quantity,
+                },
+                ConditionExpression: "Stock >= :qty",
+              },
+            });
+          }
+        };
+        console.log("writeParam:", writeParam);
         const responseWrite = await ddbDocClient.send(new TransactWriteCommand(writeParam));
       } catch (err) {
+        console.log("here's the error:", err);
         return factoryHttpRes(500, "False", "Error occured in putting and updating new entries section for tables", "Internal server error");
       }
       
@@ -399,5 +419,3 @@ export const handler = async (event) => {
       return factoryHttpRes(500, "false", "in default case", "true");
   }
 };
-
-//

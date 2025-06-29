@@ -35,6 +35,7 @@ export default function ItemSelector({ products = [], onItemAdd }) {
             quantity: qty,
             price: product.Price,
             stock: product.Stock,
+            category: product.Category,
           });
         }
       }
