@@ -69,6 +69,7 @@ export const handler = async (event) => {
             })
         })
         console.log(response)
+        console.log(process.env.WHATSAPP_API_KEY)
     }
     catch(e){
         console.log(e)
