@@ -61,7 +61,7 @@ export default function page({ item }) {
       newCart[itemExists].quantity += newItem.quantity;
       setCart(newCart);
       localStorage.setItem("cart", JSON.stringify(newCart));
-      router.back();
+      router.push('/');
     }
   }
   
