@@ -320,6 +320,7 @@ export const handler = async (event) => {
         order_delivery: orderData.delivDate,
         order_total: `RM ${totalPriceCalc(orderData.cart)}`,
         order_customer: orderData.custName,
+        order_link: `${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/${countOrderArchive.toString()}`,
         Phone: orderData.phone,
       });
       const responseConf = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/confirmation`, {

@@ -62,7 +62,7 @@ export const handler = async (event) => {
                                 {
                                     type:'text',
                                     parameter_name: 'order_link',
-                                    text: 'google.com'
+                                    text: `${payload.order_link}`
                                 }
                             ]
                         }
