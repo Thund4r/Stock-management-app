@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './Cart.module.css';
 import QtSelector from '@components/QtSelector';
 import { Grid } from '@mantine/core';
-export default function Cart({cart = [], setCart}) {
+export default function Cart({cart, setCart}) {
 
     const [cartOpen, setCartOpen] = useState(false);
 
