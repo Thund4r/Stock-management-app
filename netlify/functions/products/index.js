@@ -1,5 +1,6 @@
 import { DeleteCommand, TransactWriteCommand, BatchWriteCommand, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./ddbDocClient.js";
+import { bool } from "prop-types";
 
 /**
  * POST: Expects a list of products in the body.
@@ -153,86 +154,123 @@ export const handler = async (event) => {
             }
 
         case "PUT": 
-            product = JSON.parse(event.body);
-            let delParams = null;
-            if (Array.isArray(product) && product.length > 1) {
-                // If product is an array and longer than 1
-                // Do later ----------------------------------------------------!!!
-            }
-            else if (product.length === 1) {
-                // If there is only 1 customer
-                product = product[0];
-                params = {
-                    TransactItems: [{
-                        Put: {
-                        TableName: "ProductsDB",
-                        Item: product,
+            try {
+                const products = JSON.parse(event.body);
+
+                if (!Array.isArray(products) || products.length === 0) {
+                    return {
+                        statusCode: 400,
+                        body: "Must provide an array of product objects.",
+                    };
+                }
+
+                const transactItems = [];
+
+                for (const item of products) {
+                    if ("oldName" in item || "oldCategory" in item) {
+                        const { oldName, oldCategory, ...newProduct } = item;
+
+                        transactItems.push({
+                            Put: {
+                                TableName: "ProductsDB",
+                                Item: newProduct,
+                            },
+                        });
+
+                        if (oldName !== newProduct.Name || oldCategory !== newProduct.Category) {
+                            transactItems.push({
+                                Delete: {
+                                TableName: "ProductsDB",
+                                Key: {
+                                    Name: oldName,
+                                    Category: oldCategory,
+                                },
+                                },
+                            });
                         }
-                    }]
-                };
-                if (product.oldName !== product.newName || product.oldCategory !== product.Category) {
-                    delParams = {
+                    } else if ("quantity" in item) {
+                        const result = await ddbDocClient.send(new QueryCommand({
                         TableName: "ProductsDB",
-                        Key: { Name: product.oldName, Category: product.oldCategory }
+                        IndexName: "Name-Category-index",
+                        KeyConditionExpression: "#name = :n",
+                        ExpressionAttributeNames: { "#name": "Name" },
+                        ExpressionAttributeValues: { ":n": item.Name },
+                        Limit: 1,
+                        }));
+
+                        const match = result.Items?.[0];
+                        if (!match) {
+                            return { statusCode: 404, body: `Product ${item.Name} not found.` };
+                        }
+
+                        if (match.Stock === 9999) continue;
+
+                        transactItems.push({
+                            Update: {
+                                TableName: "ProductsDB",
+                                Key: {
+                                Name: match.Name,
+                                Category: match.Category,
+                                },
+                                UpdateExpression: "SET Stock = Stock + :qty",
+                                ExpressionAttributeValues: {
+                                ":qty": item.quantity,
+                                },
+                                ConditionExpression: "Stock <> :max",
+                                ExpressionAttributeValues: {
+                                ":qty": item.quantity,
+                                ":max": 9999,
+                                },
+                            },
+                            });
+                    } else {
+                        return {
+                            statusCode: 400,
+                            body: "Each product must contain either edit keys or quantity.",
+                        };
                     }
                 }
-            } 
-            else {
-                return{
-                    statusCode: 500,
-                    body: "Product must be provided."
-                }
-            }
-            
-            try {
-                console.log("Updating products...");
-                const data = await ddbDocClient.send(new TransactWriteCommand(params));
-                console.log("Updated products:", data);
-                if (delParams){
-                    const data2 = await ddbDocClient.send(new DeleteCommand(delParams));
-                }
-                
+
+                // Then send TransactWriteCommand
+                console.log("TransactWriteCommand params:", transactItems);
+                response = await ddbDocClient.send(new TransactWriteCommand({ TransactItems: transactItems }));
                 return {
                     statusCode: 200,
-                    body: "JSON.stringify(data)"
+                    body: JSON.stringify(response)
+                };
+            }
+            catch (err) {
+                return {
+                    statusCode: 500,
+                    body: JSON.stringify(err)
+                };
+            }
+
+        case "DELETE":
+            product = JSON.parse(event.body);
+            params = {
+                TableName: "ProductsDB",
+                Key: { Category: product.Category, Name: product.Name }
+            };
+            try {
+                console.log("Deleting product...");
+                console.log(params)
+                const data = await ddbDocClient.send(new DeleteCommand(params));
+                console.log("Deleted product:", data);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(data)
                 }
 
             } 
             catch (err) {
                 console.error(err);
-                
                 return {
                 statusCode: 500,
                 body: JSON.stringify(err)
                 }
                 
             }
-        
-            case "DELETE":
-                product = JSON.parse(event.body);
-                params = {
-                    TableName: "ProductsDB",
-                    Key: { Category: product.Category, Name: product.Name }
-                };
-                try {
-                    console.log("Deleting product...");
-                    console.log(params)
-                    const data = await ddbDocClient.send(new DeleteCommand(params));
-                    console.log("Deleted product:", data);
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify(data)
-                    }
-
-                } 
-                catch (err) {
-                    console.error(err);
-                    return {
-                    statusCode: 500,
-                    body: JSON.stringify(err)
-                    }
-                    
-                }
 
 
         default:

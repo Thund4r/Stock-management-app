@@ -36,12 +36,19 @@ export default function page(){
         event.preventDefault();
 
         if (products.map(item => item.Name.toLowerCase().trim()).includes(product.Name.toLowerCase().trim())) {
-            
-        alert("Product with this name already exists");
+            alert("Product with this name already exists");
         return;
         }
+        const payloadProduct = {
+            ...product,
+            Stock: parseInt(product.Stock, 10),
+            Price: parseFloat(product.Price),
+        };
 
-        const payload = JSON.stringify([product]);
+        if (isNaN(payloadProduct.Stock)) payloadProduct.Stock = 9999;
+        if (isNaN(payloadProduct.Price)) payloadProduct.Price = 0;
+
+        const payload = JSON.stringify([payloadProduct]);
         const response = await fetch (`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
             method: "POST",
             headers: {'Content-Type': 'application/json'},

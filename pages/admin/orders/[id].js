@@ -60,41 +60,84 @@ export const getStaticProps = async ({ params }) => {
 
 export default function page({ customerName, delivDate, totalPrice, delivStatus, orderID, cart}) {
   const [deliveryStatus, setDeliveryStatus] = useState(delivStatus);
+  
   const setDelivStatus = async (value) => {
-    console.log("Delivery status changed to:", value);
+  console.log("Delivery status changed to:", value);
 
-    const payload = [
-      {
-        Update: {
-          TableName: "OrderDB",
-          Key: { orderID },
-          UpdateExpression: "SET deliveryStatus = :status",
-          ExpressionAttributeValues: {
-            ":status": value
-          }
+  let stockPayload = [];
+
+  const goingToCancelled = value === "Cancelled" && deliveryStatus !== "Cancelled";
+  const goingFromCancelled = deliveryStatus === "Cancelled" && value !== "Cancelled";
+
+  if (goingToCancelled || goingFromCancelled) {
+    const confirmText = goingToCancelled
+      ? "Restock the items?"
+      : "Deduct the items?";
+    if (confirm(confirmText)) {
+      const direction = goingToCancelled ? 1 : -1;
+      stockPayload = cart
+        .filter((item) => item.stock !== 9999)
+        .map((item) => ({
+          Name: item.product,
+          Category: item.category,
+          quantity: direction * item.quantity,
+        }));
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(stockPayload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          console.error("Stock adjustment failed:", data);
+          alert("Stock update failed. See console for details.");
+        } else {
+          console.log("Stock adjustment successful.");
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        alert("Stock update failed due to network error.");
+      }
+    }
+  }
+
+  const payload = [
+    {
+      Update: {
+        TableName: "OrderDB",
+        Key: { orderID },
+        UpdateExpression: "SET deliveryStatus = :status",
+        ExpressionAttributeValues: {
+          ":status": value
         }
       }
-    ];
-
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        console.error("Failed to update delivery status:", data);
-      } else {
-        setDeliveryStatus(value);
-      }
-    } catch (err) {
-      console.error("Network error while updating delivery status:", err);
     }
-  };
+  ];
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("Failed to update delivery status:", data);
+    } else {
+      setDeliveryStatus(value);
+    }
+  } catch (err) {
+    console.error("Network error while updating delivery status:", err);
+  }
+};
   
   return (
     <div className="container">      
