@@ -1,5 +1,5 @@
 import Head from "next/head";
-import styles from './[id].module.css';
+import styles from './index.module.css';
 import { Select } from "@mantine/core";
 import { useState } from "react";
 

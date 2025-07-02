@@ -90,3 +90,9 @@ code {
   overflow-y: auto;
   height: 100%;
 }
+
+@media print {
+  button, .mantine-Modal-root {
+    display: none;
+  }
+}
