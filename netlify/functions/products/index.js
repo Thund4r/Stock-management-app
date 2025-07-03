@@ -213,9 +213,6 @@ export const handler = async (event) => {
                                 Category: match.Category,
                                 },
                                 UpdateExpression: "SET Stock = Stock + :qty",
-                                ExpressionAttributeValues: {
-                                ":qty": item.quantity,
-                                },
                                 ConditionExpression: "Stock <> :max",
                                 ExpressionAttributeValues: {
                                 ":qty": item.quantity,

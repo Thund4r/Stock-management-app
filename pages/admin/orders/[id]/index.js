@@ -188,6 +188,10 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
           <div>{delivDate}</div>
         </div>
 
+        <a href={`/admin/orders/${orderID}/invoice`}>
+          <button>Invoice</button>
+        </a>
+
       </div>
       </div>
 ) 
