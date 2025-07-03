@@ -350,7 +350,10 @@ export const handler = async (event) => {
       });
 
 
-      return factoryHttpRes(200, "True", "Successfully added item to tables", "False");
+      return {
+        statusCode: 200,
+        body: JSON.stringify(`#${countOrderArchive.toString()}`)
+      };
 
     case "GET":
       let response;

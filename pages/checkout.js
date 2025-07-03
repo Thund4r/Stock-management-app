@@ -72,15 +72,15 @@ export default function page() {
       phone: settings.Phone,
     })
     
-    const response = fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders`, {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
       body: payload
     })
+    const order_id = await response.json();
     setCart([]);
     localStorage.setItem("cart", JSON.stringify([]));
-    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}`)
-
+    router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/${order_id}/send`);
   }
 
   return(
