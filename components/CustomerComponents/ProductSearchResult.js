@@ -9,7 +9,7 @@ export default function ProductSearchResult ({ name, category, products, destina
         if (items.length !== 0){
             setContent(items.map(item => (
                 <Grid.Col 
-                    span={3} 
+                    span={6} 
                     
                     key = {item.Name}>
                     <a href = {`${destinationURL}/${encodeURIComponent(item.Name)}`}> 

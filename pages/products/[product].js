@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 export default function page({ item }) {
   const router = useRouter();
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [cart, setCart] = useState([]);
 
   let content = <></>

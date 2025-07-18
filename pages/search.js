@@ -7,7 +7,8 @@ import ProductSearchResult from '@components/CustomerComponents/ProductSearchRes
 import CustomerNav from '@components/CustomerComponents/CustomerNav'
 import Cart from '@components/CustomerComponents/Cart'
 import { useEffect, useState } from 'react'
-import { Group, Stack } from '@mantine/core';
+import { Button, Drawer, Group, Stack } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks'
 
 
 
@@ -18,6 +19,8 @@ export default function page() {
     const [cart, setCart] = useState([]);
     const [products, setProducts] = useState(null);
     const [categories, setCategories] = useState(null)
+    const [opened, { open, close }] = useDisclosure(false);
+    
 
     useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
@@ -65,19 +68,25 @@ export default function page() {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                <Group wrap="nowrap" w="80vw" align="flex-start">
-                    <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
+                <Drawer opened={opened} onClose={close} title="Categories">
                     {categories && categories.map(cat => {
-                        const checked = searchParams.getAll('category').includes(cat);
-                        return(
-                        <Group wrap="nowrap" key={cat}>
-                            <input type="checkbox" id={cat} checked={checked} onChange={(e) => filterClick(cat, e.target.checked)}/>
-                            <label htmlFor={cat}>{cat}</label>
-                        </Group>)
+                    const checked = searchParams.getAll('category').includes(cat);
+                    return(
+                    <Group wrap="nowrap" key={cat}>
+                        <input type="checkbox" id={cat} checked={checked} onChange={(e) => filterClick(cat, e.target.checked)}/>
+                        <label htmlFor={cat}>{cat}</label>
+                    </Group>)
                     })}
-                    </Stack>
-                    {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products} destinationURL={"/products"}/>}
-                </Group>
+                </Drawer>
+                        
+                <Button variant="default" onClick={open}>
+                    Category
+                </Button>
+                <Stack align="center" style={{ width: "20%", position: "sticky", top: 0,}}>
+                
+                </Stack>
+                {products && <ProductSearchResult name = {searchParams.get("name")} category = {searchParams.getAll("category")} products = {products} destinationURL={"/products"}/>}
+
             <Cart cart = {cart} setCart = {setCart}/>
             </main>
         </div>
