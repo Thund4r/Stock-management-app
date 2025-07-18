@@ -77,9 +77,14 @@ export default function page() {
       headers: {'Content-Type': 'application/json'},
       body: payload
     })
+    if (response.status !== 200) {
+      alert("Error placing order, please try again later.");
+      return;
+    }
     const order_id = await response.json();
     setCart([]);
     localStorage.setItem("cart", JSON.stringify([]));
+    localStorage.removeItem("products");
     router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/${order_id}/send`);
   }
 

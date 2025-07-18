@@ -96,12 +96,15 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
         if (!res.ok) {
           console.error("Stock adjustment failed:", data);
           alert("Stock update failed. See console for details.");
+          return;
         } else {
           console.log("Stock adjustment successful.");
+          localStorage.removeItem("products");
         }
       } catch (err) {
         console.error("Network error:", err);
         alert("Stock update failed due to network error.");
+        return;
       }
     }
   }
