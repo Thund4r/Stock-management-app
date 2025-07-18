@@ -23,27 +23,37 @@ export const getStaticPaths = async () => {
 
 
 export const getStaticProps = async ({ params }) => {
-  try{
+  try {
     let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orderID?id=${params.id}`, { method: "GET" });
-  
-    response = await response.json()
-    if(!response.items){
-      return { notFound: true }
+    response = await response.json();
+
+    if (!response.items) {
+      return { notFound: true };
     }
+
+    const orderID = String(response.items.orderID);
+    const dateOfCreation = String(response.items.dateOfCreation);
+
+    // Generate invoice number
+    const date = new Date(dateOfCreation);
+    const yy = String(date.getFullYear()).slice(-2);   // e.g. "25"
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); // e.g. "07"
+    const invoiceNumber = `${yy}${mm}${orderID}`;       // e.g. "250772"
+
     return {
       props: {
         customerName: String(response.items.customerName),
-        delivDate:  String(response.items.deliveryDate),
-        totalPrice:   String(response.items.totalPrice),
-        orderID:  String(response.items.orderID),
-        dateOfCreation: String(response.items.dateOfCreation),
+        totalPrice: String(response.items.totalPrice),
+        orderID,
+        dateOfCreation,
         cart: response.items.cart ?? [],
+        invoiceNumber,   // ✅ pass it to the page
       },
     };
-  }catch(err){
-    console.log("Error occured in orderID Api", err)
-  } 
-  
+  } catch (err) {
+    console.log("Error occurred in orderID Api", err);
+    return { notFound: true };
+  }
 };
 
 const createPagesToRender = (orders = []) => {
@@ -57,8 +67,7 @@ const createPagesToRender = (orders = []) => {
 };
 
 
-
-export default function page({ customerName, delivDate, totalPrice, delivStatus, orderID, dateOfCreation, cart}) {
+export default function page({ customerName, totalPrice, dateOfCreation, cart, invoiceNumber}) {
     const [settings, setSettings] = useState({Name: "", Phone: "", Address: ""});
 
     useEffect(() => {
@@ -82,7 +91,7 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
     const downloadPDF = async () => {
         const html2pdf = (await import("html2pdf.js")).default;
         const element = document.getElementById("invoice");
-        html2pdf().from(element).save(`order${orderID}invoice.pdf`);
+        html2pdf().from(element).save(`order${invoiceNumber}invoice.pdf`);
     };
 
 
@@ -94,7 +103,7 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
             <Stack id="invoice">
                 <Flex justify={"space-between"}>
                     <Stack gap="0">
-                        <h2>Invoice #{orderID}</h2>
+                        <h2>Invoice #{invoiceNumber}</h2>
                         <div>Order Date: {dateOfCreation}</div>
                         <div>DEBIT NOTE</div>
                     </Stack>
