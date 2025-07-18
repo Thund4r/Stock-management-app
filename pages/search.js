@@ -68,7 +68,7 @@ export default function page() {
                 <Header title="10 Gram Gourmet Sdn Bhd"/>
                 <CustomerNav/>
                 <Search/>
-                <Drawer opened={opened} onClose={close} title="Categories">
+                <Drawer opened={opened} onClose={close} size="xs" title="Categories">
                     {categories && categories.map(cat => {
                     const checked = searchParams.getAll('category').includes(cat);
                     return(
