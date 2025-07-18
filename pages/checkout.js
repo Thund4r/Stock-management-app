@@ -84,7 +84,7 @@ export default function page() {
     const order_id = await response.json();
     setCart([]);
     localStorage.setItem("cart", JSON.stringify([]));
-    localStorage.removeItem("products");
+    sessionStorage.removeItem("products");
     router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/${order_id}/send`);
   }
 

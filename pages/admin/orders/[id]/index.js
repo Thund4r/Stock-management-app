@@ -99,7 +99,7 @@ export default function page({ customerName, delivDate, totalPrice, delivStatus,
           return;
         } else {
           console.log("Stock adjustment successful.");
-          localStorage.removeItem("products");
+          sessionStorage.removeItem("products");
         }
       } catch (err) {
         console.error("Network error:", err);
