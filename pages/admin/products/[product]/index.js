@@ -114,17 +114,14 @@ export default function Page({ item, products }) {
   );
 }
 
-// ⚡ NEW: getServerSideProps runs on every request
 export async function getServerSideProps({ params }) {
   const productName = decodeURIComponent(params.product);
   
   try {
-    // Fetch single product
     const productRes = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products?name=${encodeURIComponent(productName)}&single=True`);
     const productData = await productRes.json();
     const item = productData[0];
 
-    // Fetch all products (for categories + name check)
     const allProductsRes = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`);
     const allProducts = await allProductsRes.json();
 

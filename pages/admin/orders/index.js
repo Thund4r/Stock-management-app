@@ -8,7 +8,12 @@ export default function page(){
     const [orders, setOrders] = useState(null);
       
     useEffect(() => {
-    checkOrders();
+        checkOrders();
+        const handlePageShow = () => {
+            checkOrders();
+        };
+        window.addEventListener("pageshow", handlePageShow);
+        return () => window.removeEventListener("pageshow", handlePageShow);
     }, []);
 
     const checkOrders = async () => {
