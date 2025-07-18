@@ -72,7 +72,7 @@ export default function InvoicePage({ customerName, delivDate, totalPrice, order
         `See order details: ${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/orders/${orderID}\n` +
         `To change order status, please follow the link.`;
 
-    const phone = "01121009210";
+    const phone = "601121009210";
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
     return (
