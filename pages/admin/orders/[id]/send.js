@@ -21,30 +21,38 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }) => {
   try {
-    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orderID?id=${params.id}`, {
-      method: "GET"
-    });
-
+    let response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orderID?id=${params.id}`, { method: "GET" });
     response = await response.json();
-    if (!response.items) return { notFound: true };
+
+    if (!response.items) {
+      return { notFound: true };
+    }
+
+    const orderID = String(response.items.orderID);
+    const dateOfCreation = String(response.items.dateOfCreation);
+
+    const date = new Date(dateOfCreation);
+    const yy = String(date.getFullYear()).slice(-2);
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); 
+    const invoiceNumber = `${yy}${mm}${orderID}`;
 
     return {
       props: {
         customerName: String(response.items.customerName),
         delivDate: String(response.items.deliveryDate),
         totalPrice: String(response.items.totalPrice),
-        orderID: String(response.items.orderID),
-        dateOfCreation: String(response.items.dateOfCreation),
+        orderID,
         cart: response.items.cart ?? [],
+        invoiceNumber,
       },
     };
   } catch (err) {
-    console.error("Error in orderID API", err);
+    console.log("Error occurred in orderID Api", err);
     return { notFound: true };
   }
 };
 
-export default function InvoicePage({ customerName, delivDate, totalPrice, orderID, dateOfCreation, cart }) {
+export default function InvoicePage({ customerName, delivDate, totalPrice, orderID, cart, invoiceNumber}) {
     const [settings, setSettings] = useState({ Name: "", Phone: "", Address: "" });
 
     useEffect(() => {
@@ -64,7 +72,7 @@ export default function InvoicePage({ customerName, delivDate, totalPrice, order
         .join("\n");
     const message =
         `${settings.Name}\n` +
-        `New order: #${orderID}\n\n` +
+        `New order: #${invoiceNumber}\n\n` +
         `Order items: ${formattedItems}\n\n` +
         `Delivery date: ${delivDate}\n\n` +
         `Total amount: RM ${totalPrice}\n\n` +

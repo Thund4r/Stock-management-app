@@ -34,11 +34,10 @@ export const getStaticProps = async ({ params }) => {
     const orderID = String(response.items.orderID);
     const dateOfCreation = String(response.items.dateOfCreation);
 
-    // Generate invoice number
     const date = new Date(dateOfCreation);
-    const yy = String(date.getFullYear()).slice(-2);   // e.g. "25"
-    const mm = String(date.getMonth() + 1).padStart(2, '0'); // e.g. "07"
-    const invoiceNumber = `${yy}${mm}${orderID}`;       // e.g. "250772"
+    const yy = String(date.getFullYear()).slice(-2);
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); 
+    const invoiceNumber = `${yy}${mm}${orderID}`;
 
     return {
       props: {
@@ -47,7 +46,7 @@ export const getStaticProps = async ({ params }) => {
         orderID,
         dateOfCreation,
         cart: response.items.cart ?? [],
-        invoiceNumber,   // ✅ pass it to the page
+        invoiceNumber,
       },
     };
   } catch (err) {
