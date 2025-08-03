@@ -156,6 +156,54 @@ export const handler = async (event) => {
         case "PUT": 
             try {
                 const products = JSON.parse(event.body);
+                if (products.renameCategory && products.oldCategory && products.newCategory) {
+                    console.log(`Renaming category ${products.oldCategory} → ${products.newCategory}`);
+
+                    const result = await ddbDocClient.send(new QueryCommand({
+                        TableName: "ProductsDB",
+                        KeyConditionExpression: "#cat = :oldCat",
+                        ExpressionAttributeNames: { "#cat": "Category" },
+                        ExpressionAttributeValues: { ":oldCat": products.oldCategory },
+                    }));
+
+                    const items = result.Items || [];
+                    if (items.length === 0) {
+                        return { statusCode: 404, products: `No items found in category ${products.oldCategory}` };
+                    }
+                    
+                    const transactItems = [];
+
+                    for (const item of items) {
+                        transactItems.push({
+                            Put: {
+                                TableName: "ProductsDB",
+                                Item: { ...item, Category: products.newCategory }
+                            }
+                        });
+                        transactItems.push({
+                            Delete: {
+                                TableName: "ProductsDB",
+                                Key: {
+                                    Category: item.Category,
+                                    Name: item.Name
+                                }
+                            }
+                        });
+                    }
+
+                    console.log("Prepared transactItems:", transactItems);
+
+                    const chunks = chunkArray(transactItems, 100);
+
+                    for (const chunk of chunks) {
+                        await ddbDocClient.send(new TransactWriteCommand({ TransactItems: chunk }));
+                    }
+
+                    return {
+                        statusCode: 200,
+                        body: `Renamed category from ${products.oldCategory} to ${products.newCategory}`
+                    };
+                }
 
                 if (!Array.isArray(products) || products.length === 0) {
                     return {
@@ -228,12 +276,16 @@ export const handler = async (event) => {
                     }
                 }
 
-                // Then send TransactWriteCommand
                 console.log("TransactWriteCommand params:", transactItems);
-                response = await ddbDocClient.send(new TransactWriteCommand({ TransactItems: transactItems }));
+                const chunks = chunkArray(transactItems, 100);
+
+                for (const chunk of chunks) {
+                    await ddbDocClient.send(new TransactWriteCommand({ TransactItems: chunk }));
+                }
+                
                 return {
                     statusCode: 200,
-                    body: JSON.stringify(response)
+                    body: JSON.stringify(transactItems)
                 };
             }
             catch (err) {

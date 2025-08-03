@@ -6,7 +6,8 @@
     top: 0;
     transition: right 0.3s ease;
     background-color: #edf0f3;
-    z-index: 1000
+    z-index: 1000;
+    overflow-y: auto;
   }
 
 .checkoutButton{

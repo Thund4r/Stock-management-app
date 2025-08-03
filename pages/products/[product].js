@@ -48,7 +48,10 @@ export default function page({ item }) {
   }
 
   const addToCart = () => {
-    console.log(product)
+    if (quantity <= 0) {
+      alert("Please select a valid quantity");
+      return;
+    }
     const newItem = {product: product.Name, quantity: parseInt(quantity), price: parseInt(product.Price), stock: parseInt(product.Stock), category: product.Category};
     const itemExists = cart.findIndex((item) => item.product === newItem.product);
     if (itemExists == -1){

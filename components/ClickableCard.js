@@ -76,6 +76,41 @@ export function ClickableCardCustomer({ data = [], title = "" }){
     );
 }
 
+export function ClickableCardCategory({ data = [], title = "" }){
+    let content;
+
+    if (data.length !== 0){
+        content = data.map(item => (
+            <a href = {`/admin/category/${encodeURIComponent(item)}`} key = {item} className={styles.custCard}> 
+                <b style={{paddingRight:"18px"}}>{item}</b>
+            </a>  
+        ));
+    }
+    else{
+        content = (
+        <p>
+            
+        </p>);
+    }
+    if (title !== ""){
+        content = (
+            <>
+                <p>
+                    {title}
+                </p>
+                {content}
+            </>
+        );
+    }
+    
+
+    return(
+        <div style={{flex: 1}}>
+            {content}
+        </div>
+    );
+}
+
 export function ClickableCardOrder({ data = [], title = "" }){
     let content;
 
