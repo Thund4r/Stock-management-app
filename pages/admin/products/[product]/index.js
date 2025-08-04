@@ -20,7 +20,7 @@ export default function Page({ item, products }) {
         headers: {'Content-Type': 'application/json'},
         body: payload
       });
-
+      sessionStorage.removeItem("products");
       router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
     };
   }
@@ -40,13 +40,12 @@ export default function Page({ item, products }) {
     }
     else {
       const payload = JSON.stringify([{ ...product, oldName: item.Name, oldCategory: item.Category }]);
-      console.log(payload);
       await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {
         method: "PUT",
         headers: {'Content-Type': 'application/json'},
         body: payload
       });
-
+      sessionStorage.removeItem("products");
       router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
     }
   }

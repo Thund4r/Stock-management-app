@@ -15,10 +15,11 @@ export default function Page({ initialCategory }) {
       return;
     }
 
-    const payload = JSON.stringify([{ 
+    const payload = JSON.stringify({ 
       oldCategory: initialCategory, 
-      newCategory: newCategory 
-    }]);
+      newCategory: newCategory,
+      renameCategory: true
+    });
 
     console.log("Submitting payload:", payload);
 
@@ -28,8 +29,8 @@ export default function Page({ initialCategory }) {
         headers: { 'Content-Type': 'application/json' },
         body: payload,
       });
-
-      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products`);
+      sessionStorage.removeItem("products");
+      router.push(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/category`);
     } catch (error) {
       console.error("Failed to rename category:", error);
       alert("An error occurred while renaming the category.");
