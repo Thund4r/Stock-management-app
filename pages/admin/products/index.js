@@ -66,13 +66,14 @@ export default function page(){
         }
 
         products.forEach(product => {
-            if (product.Price) {
-                const cleaned = product.Price.replace(/[^0-9.,]/g, "").replace(",", ".");
+            if (product.Price !== undefined && product.Price !== null) {
+                const cleaned = String(product.Price).replace(/[^0-9.,]/g, "").replace(",", ".");
                 const numeric = parseFloat(cleaned);
                 product.Price = isNaN(numeric) ? 0 : numeric;
             } else {
                 product.Price = 0;
             }
+
             if (product.Stock !== undefined && product.Stock !== null) {
                 const parsedStock = parseInt(product.Stock, 10);
                 product.Stock = isNaN(parsedStock) ? 9999 : parsedStock;

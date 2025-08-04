@@ -1,6 +1,7 @@
 import { Flex, FileInput, Button, Text, Stack, Select } from "@mantine/core";
 import { useState } from "react";
 import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import styles from "./BulkUpload.module.css";
 
 export default function BulkUpload({ onFinish, destinationOptions, defaultValues }) {
@@ -10,24 +11,44 @@ export default function BulkUpload({ onFinish, destinationOptions, defaultValues
 
   const handleFileUpload = (file) => {
     if (!file) return;
-    if (!file.name.toLowerCase().endsWith(".csv")) {
-      alert("Only CSV files are allowed.");
-      return;
-    }
+
+    const fileName = file.name.toLowerCase();
+
     setUploading(true);
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setCsvData(results.data);
+    if (fileName.endsWith(".csv")) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          setCsvData(results.data);
+          setUploading(false);
+        },
+        error: function (error) {
+          console.error("Error parsing file:", error);
+          setUploading(false);
+        }
+      });
+    } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); // get JSON with empty cells as ""
+        setCsvData(jsonData);
         setUploading(false);
-      },
-      error: function (error) {
-        console.error("Error parsing CSV:", error);
+      };
+      reader.onerror = (error) => {
+        console.error("Error reading Excel file:", error);
         setUploading(false);
-      }
-    });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert("Only CSV or Excel files (.xlsx, .xls) are allowed.");
+      setUploading(false);
+    }
   };
 
   const handleSelectChange = (header, value) => {
@@ -39,7 +60,7 @@ export default function BulkUpload({ onFinish, destinationOptions, defaultValues
 
   const handleFinish = () => {
     if (!csvData || Object.keys(columnMap).length === 0) {
-      alert("Please upload a CSV and complete the mapping.");
+      alert("Please upload a file and complete the mapping.");
       return;
     }
   
@@ -66,10 +87,10 @@ export default function BulkUpload({ onFinish, destinationOptions, defaultValues
   if (!csvData) {
     return (
       <Flex direction="column" align="center" gap="md" className={styles.container}>
-        <h2>Upload a CSV File</h2>
+        <h2>Upload a File</h2>
         <FileInput
           placeholder="Choose CSV file"
-          accept=".csv"
+          accept=".csv, .xlsx, .xls"
           onChange={handleFileUpload}
           disabled={uploading}
         />
