@@ -129,7 +129,7 @@ export default function page(){
                 onClose={() => {
                 setOpened(false);
                 }}
-                title="Upload your CSV"
+                title="Upload your CSV or Excel file"
                 size="100%"
                 centered>
                 <BulkUpload

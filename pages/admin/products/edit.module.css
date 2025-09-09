@@ -1,0 +1,11 @@
+.cartButton {
+    display: flex;
+    cursor: pointer;
+    position: fixed;
+    height: 37px;
+    width: 70vw;
+    background-color: dodgerblue;
+    justify-content: center;
+    align-items: center;
+    bottom: 25px;
+}

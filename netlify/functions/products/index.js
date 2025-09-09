@@ -157,7 +157,6 @@ export const handler = async (event) => {
             try {
                 const products = JSON.parse(event.body);
                 console.log("Received products:", products);
-                console.log(products.renameCategory && products.oldCategory && products.newCategory);
                 if (products.renameCategory && products.oldCategory && products.newCategory) {
                     console.log(`Renaming category ${products.oldCategory} → ${products.newCategory}`);
 
