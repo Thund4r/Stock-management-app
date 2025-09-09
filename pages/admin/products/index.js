@@ -123,6 +123,7 @@ export default function page(){
                 </Group>
             </Stack>
             <a href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/new`}><Button>Add Product</Button></a>
+            <a href={`${process.env.NEXT_PUBLIC_ROOT_PAGE}/admin/products/edit`}><Button>Bulk Edit</Button></a>
             <Button onClick={() => setOpened(true)}>Import Products</Button>
             <Modal
                 opened={opened}

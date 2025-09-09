@@ -139,7 +139,7 @@ export function ClickableCardOrder({ data = [], title = "" }){
     }
     content = (
         <> 
-            <div className={styles.ordCard}>
+            <div className={styles.ordCardLegend}>
                 <b style={{paddingRight:"18px"}}>Order ID</b>
                 <div>Customer</div>
                 <div>Total Price</div>
