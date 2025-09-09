@@ -13,7 +13,13 @@ export default function ProductSearchResult ({ name, category, products, destina
                     
                     key = {item.Name}>
                     <a href = {`${destinationURL}/${encodeURIComponent(item.Name)}`}> 
-                        <div>
+                        <div style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                        padding: "12px",
+                        marginBottom: "12px",
+                        background: "#fff",
+                        }}>
                             <b>{item.Name}</b> <br/>
                             RM {item.Price} <br/>
                         </div>
