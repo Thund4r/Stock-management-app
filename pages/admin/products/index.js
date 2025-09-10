@@ -21,7 +21,7 @@ export default function page(){
     checkProducts();
     }, []);
     
-
+    
     const checkProducts = async () => {
         if (!(sessionStorage.getItem("products"))){
           const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/products`, {

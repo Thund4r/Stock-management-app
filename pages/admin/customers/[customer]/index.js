@@ -13,7 +13,6 @@ export default function page({ customerTest, orders }) {
   let content = <></>
 
   useEffect(() => {
-
     try {
     setCustomer(customerTest);
     console.log(pathName);
@@ -84,10 +83,6 @@ export default function page({ customerTest, orders }) {
     );
   };
 
-  const checkMonthlySpending = () => {
-    //TODO
-  }
-
 
   return(
   <Flex>
@@ -98,52 +93,43 @@ export default function page({ customerTest, orders }) {
 
 }
 
-export async function getStaticPaths() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers`);
-  let customers = [];
-
+export async function getServerSideProps({ params }) {
   try {
-    const data = await response.json();
-    customers = Array.isArray(data) ? data : [];
+    const customerFetch = await fetch(
+      `${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${encodeURIComponent(
+        params.customer
+      )}`
+    );
+    if (!customerFetch.ok) {
+      return { notFound: true };
+    }
+    const customerTest = (await customerFetch.json())[0];
+
+    const ordersFetch = await fetch(
+      `${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${encodeURIComponent(
+        params.customer
+      )}`
+    );
+    if (!ordersFetch.ok) {
+      return { notFound: true };
+    }
+    const response = await ordersFetch.json();
+    const orders = (response.items || [])
+      .filter((order) => !isNaN(order.orderID))
+      .sort((a, b) => Number(b.orderID) - Number(a.orderID));
+
+    if (!customerTest) {
+      return { notFound: true };
+    }
+
+    return {
+      props: {
+        customerTest,
+        orders,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching customers:", error);
-  }
-  const paths = customers.map(item => ({params: {customer: encodeURIComponent(item.Name)}}));
-
-  return {
-    paths,
-    fallback: "blocking",
-  }
-}
-
-export async function getStaticProps({ params }) {
-  const customerFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/customers?name=${encodeURIComponent(params.customer)}`);
-  if (!customerFetch) {
-    console.error("Failed to fetch customer:", customerFetch.statusText);
+    console.error("Error fetching customer/orders:", error);
     return { notFound: true };
   }
-  const customerTest = (await customerFetch.json())[0];
-  
-  const ordersFetch = await fetch(`${process.env.NEXT_PUBLIC_ROOT_PAGE}/.netlify/functions/orders?customerName=${encodeURIComponent(params.customer)}`);
-  if (!ordersFetch) {
-    console.error("Failed to fetch orders:", ordersFetch.statusText);
-    return { notFound: true };
-  }
-  const response = await ordersFetch.json();
-  if (!response.items) {
-    return { notFound: true };
-  }
-  const orders = response.items.filter(order => !isNaN(order.orderID))
-            .sort((a, b) => Number(b.orderID) - Number(a.orderID));
-            
-  if (!customerTest) {
-    return { notFound: true };
-  }
-  
-  return {
-    props: {
-      customerTest,
-      orders,
-    },
-  };
 }
